@@ -9,14 +9,14 @@ services:
     depends_on:
       - database
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/postgres
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=copainsderoute1
+      - SPRING_DATASOURCE_URL=${DATABASE_DOCKER_URL}
+      - SPRING_DATASOURCE_USERNAME=${DATABASE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 
   database:
     image: 'postgres:13.1-alpine'
     container_name: database
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=copainsderoute1
+      - POSTGRES_USER=${DATABASE_USERNAME}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
