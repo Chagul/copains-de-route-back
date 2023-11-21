@@ -1,6 +1,5 @@
 package com.univ.lille.copainsderoute.platine.service;
 
-import com.univ.lille.copainsderoute.platine.entity.Event;
 import com.univ.lille.copainsderoute.platine.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
