@@ -22,11 +22,11 @@ public class Friends {
 
     @ManyToOne
     @JoinColumn(name = "user_1_id", nullable = false)
-    private User user1;
+    private User user1; //l'id de l'utilisateur qui a envoyé la demande
 
     @ManyToOne
     @JoinColumn(name = "user_2_id", nullable = false)
-    private User user2;
+    private User user2; //l'id de l'utilisateur qui a reçu la demande
 
     @Column(name = "submission_time")
     private LocalDateTime submissionTime;

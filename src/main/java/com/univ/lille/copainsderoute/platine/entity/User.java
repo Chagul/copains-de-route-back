@@ -37,7 +37,7 @@ public class User {
     @Column(name = "co2_not_emitted")
     private int co2_not_emitted;
 
-    @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "user1")
     private Set<Friends> friends;
 
     // TODO add profile image
