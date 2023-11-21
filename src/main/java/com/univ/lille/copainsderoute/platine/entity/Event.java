@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -26,7 +27,7 @@ public class Event {
     private String description;
     private Visibility visibility;
 
-    @Column(name = "promoter_id")
+    @PrimaryKeyJoinColumn(name = "promoter_id")
     @OneToOne
     private User promoter;
 
