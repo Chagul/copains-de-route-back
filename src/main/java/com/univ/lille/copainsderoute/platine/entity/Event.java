@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,10 @@ public class Event {
     private String name;
     private String description;
     private Visibility visibility;
+
+    @Column(name = "promoter_id")
+    @OneToOne
+    private User promoter;
 
     @Column(name = "max_participants")
     private int maxParticipants;
