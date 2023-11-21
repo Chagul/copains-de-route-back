@@ -13,6 +13,9 @@ services:
       - SPRING_DATASOURCE_USERNAME=${DATABASE_USERNAME}
       - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    ports:
+      - 8080:8080
+
 
   database:
     image: 'postgres:13.1-alpine'

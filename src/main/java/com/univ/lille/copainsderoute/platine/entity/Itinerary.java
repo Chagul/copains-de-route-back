@@ -15,7 +15,7 @@ public class Itinerary {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private int order;
+    private int rank;
     private String point;
 
     @ManyToOne
