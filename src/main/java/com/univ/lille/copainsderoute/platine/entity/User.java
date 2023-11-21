@@ -5,8 +5,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+
+import java.util.Set;
 
 @Entity
 @Data
@@ -32,6 +36,9 @@ public class User {
 
     @Column(name = "co2_not_emitted")
     private int co2_not_emitted;
+
+    @OneToMany(mappedBy = "users")
+    private Set<Friends> friends;
 
     // TODO add profile image
 }
