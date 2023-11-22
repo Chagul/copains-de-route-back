@@ -20,8 +20,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(unique = true, name = "login")
     private String login;
+    @Column(unique = true, name = "email")
     private String email;
+    @Column(name = "password")
     private String password;
 
     @Column(name = "number_events_participated")

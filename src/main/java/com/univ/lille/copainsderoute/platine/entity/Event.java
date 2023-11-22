@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ import java.util.Set;
 
 @Entity
 @Data
+@Table(name = "events")
 public class Event {
 
     @Id
@@ -27,7 +29,7 @@ public class Event {
     private String description;
     private Visibility visibility;
 
-    @PrimaryKeyJoinColumn(name = "promoter_id")
+    @PrimaryKeyJoinColumn(name = "user_id")
     @OneToOne
     private User promoter;
 
@@ -61,3 +63,4 @@ public class Event {
     @Column(name = "end_point")
     private String endPoint;
 }
+
