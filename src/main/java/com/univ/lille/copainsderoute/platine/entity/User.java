@@ -11,6 +11,8 @@ import lombok.Data;
 
 import java.util.Set;
 
+import com.univ.lille.copainsderoute.platine.dtos.UserRequestDTOs;
+
 @Entity
 @Data
 @Table(name = "users")
@@ -43,4 +45,24 @@ public class User {
     private Set<Friends> friends;
 
     // TODO add profile image
+
+    public User(UserRequestDTOs userRequestDTOs)    {
+
+        this.login = userRequestDTOs.getLogin();
+
+        this.email = userRequestDTOs.getEmail();
+
+        this.password = userRequestDTOs.getPassword();
+
+        this.numberEventsParticipated= userRequestDTOs.getNumberEventsParticipated();
+
+        this.numberEventsCreated= userRequestDTOs.getNumberEventsCreated();
+
+        this.distanceTraveled = userRequestDTOs.getDistanceTraveled();
+
+        this.co2_not_emitted = userRequestDTOs.getCo2_not_emitted();
+
+        this.friends  = userRequestDTOs.getFriends();
+
+    }
 }

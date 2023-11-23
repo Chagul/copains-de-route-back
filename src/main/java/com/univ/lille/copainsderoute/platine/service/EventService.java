@@ -35,51 +35,36 @@ public class EventService {
      * @return id of the event
      */
     public Event createEvent(EventRequestDTOs eventRequestDTO) {
-        Event evt = new Event();
-        User user = userRepository.findById(eventRequestDTO.getPromoter()).get();
-        evt.setName(eventRequestDTO.getName());
 
-        evt.setDescription(eventRequestDTO.getDescription());
-
-        evt.setPromoter(user);  
-
-        //evt.setItineraryPoints(eventRequestDTO.getItineraryPoints());
-        evt.setMaxParticipants(eventRequestDTO.getMaxParticipants());
-        evt.setStartTime(eventRequestDTO.getStartTime());
-        evt.setRoadType1(eventRequestDTO.getRoadType1());
-        evt.setRoadType2(eventRequestDTO.getRoadType2());
-        evt.setRoadType3(eventRequestDTO.getRoadType3());
-        evt.setBikeType1(eventRequestDTO.getBikeType1());
-        evt.setBikeType2(eventRequestDTO.getBikeType2());
-        evt.setStartPoint(eventRequestDTO.getStartPoint());
-        evt.setEndPoint(eventRequestDTO.getEndPoint());
+        User promoter = userRepository.findById(eventRequestDTO.getPromoter()).get();
+        Event evt = new Event(eventRequestDTO, promoter);
 
         eventRepository.save(evt);
-        return evt; }
+        return evt;
+    
+    }
 
         public Event updateEvent (EventRequestDTOs eventRequestDTO, int id) {
 
             Event evt = eventRepository.findById(id).get();
-            User user = userRepository.findById(eventRequestDTO.getPromoter()).get();
 
             evt.setName(eventRequestDTO.getName());
             evt.setDescription(eventRequestDTO.getDescription());
-
-            evt.setPromoter(user);
-            
-        //evt.setItineraryPoints(eventRequestDTO.getItineraryPoints());
-            evt.setMaxParticipants(eventRequestDTO.getMaxParticipants());
-            evt.setStartTime(eventRequestDTO.getStartTime());
-            evt.setRoadType1(eventRequestDTO.getRoadType1());
+            evt.setVisibility(eventRequestDTO.getVisibility());
+            evt.setMaxParticipants (eventRequestDTO.getMaxParticipants());
+            evt.setStartTime (eventRequestDTO.getStartTime());
+            evt.setRoadType1 (eventRequestDTO.getRoadType1());
             evt.setRoadType2(eventRequestDTO.getRoadType2());
-            evt.setRoadType3(eventRequestDTO.getRoadType3());
+            evt.setRoadType3 (eventRequestDTO.getRoadType3());
             evt.setBikeType1(eventRequestDTO.getBikeType1());
             evt.setBikeType2(eventRequestDTO.getBikeType2());
             evt.setStartPoint(eventRequestDTO.getStartPoint());
             evt.setEndPoint(eventRequestDTO.getEndPoint());
 
+
             eventRepository.save(evt);
-            return evt; }
+            return evt; 
+        }
 
         
         public void deleteEvent(int id) {

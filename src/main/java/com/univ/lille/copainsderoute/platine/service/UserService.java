@@ -21,23 +21,7 @@ public class UserService {
 
     public User createUser(UserRequestDTOs userRequestDTO) {
     
-        User user = new User();
-
-        user.setLogin(userRequestDTO.getLogin());
-
-        user.setEmail(userRequestDTO.getEmail());
-
-        user.setPassword(userRequestDTO.getPassword());
-
-        user.setNumberEventsParticipated(userRequestDTO.getNumberEventsParticipated());
-
-        user.setNumberEventsCreated(userRequestDTO.getNumberEventsCreated());
-
-        user.setDistanceTraveled(userRequestDTO.getDistanceTraveled());
-
-        user.setCo2_not_emitted(userRequestDTO.getCo2_not_emitted());
-
-        user.setFriends(userRequestDTO.getFriends());
+        User user = new User(userRequestDTO);
 
         return userRepository.save(user);
 

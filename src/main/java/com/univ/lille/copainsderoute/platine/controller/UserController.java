@@ -28,12 +28,18 @@ public class UserController {
     @GetMapping("")
     public ResponseEntity<List<User>> getUsers() throws Exception{
         List<User> users = userService.getUsers();
+        if (users.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("{id}")
     public ResponseEntity<User> getUser(@PathVariable("id") int id) throws Exception{
         User user = userService.getUser(id);
+        if (user == null) {
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 

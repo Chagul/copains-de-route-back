@@ -29,19 +29,25 @@ public class EventController {
     @GetMapping("")
     public ResponseEntity<List<Event>> getEvents() throws Exception{
         List<Event> events = eventService.getEvents();
-        return new ResponseEntity<>(events, HttpStatus.OK);
+        if (events.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        }
+        return ResponseEntity.ok(events);
     }
 
     @GetMapping("{id}")
     public ResponseEntity<Event> getEvent(@PathVariable("id") int id) throws Exception{
         Event event = eventService.getEvent(id);
-        return new ResponseEntity<>(event, HttpStatus.OK);
+        if (event == null) {
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        }
+        return ResponseEntity.ok(event);
     }
 
     @PostMapping("")
     public ResponseEntity<Event> createEvent(@RequestBody EventRequestDTOs eventRequestDTO) throws Exception{
         Event event = eventService.createEvent(eventRequestDTO);
-        return new ResponseEntity<>(event, HttpStatus.OK);
+        return new ResponseEntity<>(event, HttpStatus.CREATED);
     }
 
     @PatchMapping("{id}")
