@@ -2,7 +2,6 @@ package com.univ.lille.copainsderoute.platine.dtos;
 
 import java.time.LocalDateTime;
 
-import com.univ.lille.copainsderoute.platine.entity.User;
 import com.univ.lille.copainsderoute.platine.enums.BikeType;
 import com.univ.lille.copainsderoute.platine.enums.RoadType;
 import com.univ.lille.copainsderoute.platine.enums.Visibility;

@@ -20,7 +20,7 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 
 @RestController
-@RequestMapping("/events")
+@RequestMapping("events")
 @AllArgsConstructor
 
 public class EventController {
