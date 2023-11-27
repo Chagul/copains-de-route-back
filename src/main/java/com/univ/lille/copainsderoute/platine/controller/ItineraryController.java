@@ -27,35 +27,35 @@ public class ItineraryController {
     private final ItineraryService itineraryService;
 
     @GetMapping("")
-    public ResponseEntity<List<Itinerary>> getItineraries() throws Exception{
+    public ResponseEntity<List<Itinerary>> getItineraries() throws RuntimeException{
         List<Itinerary> itineraries = itineraryService.getItinerary(); 
         if (itineraries.isEmpty()) {
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+            return ResponseEntity.noContent().build();
         }
-        return new ResponseEntity<>(itineraries, HttpStatus.OK);
+        return ResponseEntity.ok(itineraries);
     }
 
     @PostMapping("")
-    public ResponseEntity<Itinerary> createItinerary(@RequestBody ItineraryRequestDTOs itineraryRequestDTOs) throws Exception{
+    public ResponseEntity<Itinerary> createItinerary(@RequestBody ItineraryRequestDTOs itineraryRequestDTOs) throws RuntimeException{
         Itinerary itinerary = itineraryService.createItinerary(itineraryRequestDTOs);
-        return new ResponseEntity<>(itinerary, HttpStatus.CREATED);
+        return ResponseEntity.created(null).body(itinerary);
     }
 
     @GetMapping("/events/{eventId}")
-    public ResponseEntity<List<Itinerary>> getItinerary(@PathVariable("eventId") int id) throws Exception{
+    public ResponseEntity<List<Itinerary>> getItinerary(@PathVariable("eventId") int id) throws RuntimeException{
         List<Itinerary> itinerary = itineraryService.getItineraryByEvent(id);
-        return new ResponseEntity<>(itinerary, HttpStatus.OK);
+        return ResponseEntity.ok(itinerary);
     }
     
     @PatchMapping("/{id}")
-    public ResponseEntity<Itinerary> patchItinerary (@RequestBody ItineraryRequestDTOs itineraryRequestDTOs, @PathVariable("id") int id) throws Exception{
+    public ResponseEntity<Itinerary> patchItinerary (@RequestBody ItineraryRequestDTOs itineraryRequestDTOs, @PathVariable("id") int id) throws RuntimeException{
         Itinerary itinerary = itineraryService.patchItinerary(itineraryRequestDTOs, id);
-        return new ResponseEntity<>(itinerary, HttpStatus.OK);
+        return ResponseEntity.ok(itinerary);
     }
 
-    public ResponseEntity<Itinerary> deleteItinerary(@PathVariable("id") int id) throws Exception{
+    public ResponseEntity<Itinerary> deleteItinerary(@PathVariable("id") int id) throws RuntimeException{
         itineraryService.deleteItinerary(id);
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 
     

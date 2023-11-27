@@ -24,6 +24,10 @@ public class EventRequestDTOs {
 
   private RoadType roadType1;
 
+  private RoadType roadType2;
+
+  private RoadType roadType3;
+
   private String startPoint;
 
   private String endPoint;
@@ -31,10 +35,6 @@ public class EventRequestDTOs {
   private String name;
 
   private String description;
-
-  private RoadType roadType2;
-
-  private RoadType roadType3;
 
   private BikeType bikeType1;
 

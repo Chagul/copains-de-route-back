@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 public class ItineraryRequestDTOs {
     
     private int rank;
+    
     private String point;
 
     private int event;

@@ -1,8 +1,5 @@
 package com.univ.lille.copainsderoute.platine.entity;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.univ.lille.copainsderoute.platine.dtos.EventRequestDTOs;
 import com.univ.lille.copainsderoute.platine.enums.BikeType;
 import com.univ.lille.copainsderoute.platine.enums.RoadType;
 import com.univ.lille.copainsderoute.platine.enums.Visibility;

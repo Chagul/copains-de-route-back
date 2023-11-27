@@ -26,39 +26,39 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("")
-    public ResponseEntity<List<User>> getUsers() throws Exception{
+    public ResponseEntity<List<User>> getUsers() throws RuntimeException{
         List<User> users = userService.getUsers();
         if (users.isEmpty()) {
             return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<User> getUser(@PathVariable("id") int id) throws Exception{
+    public ResponseEntity<User> getUser(@PathVariable("id") int id) throws RuntimeException{
         User user = userService.getUser(id);
         if (user == null) {
             return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("")
-    public ResponseEntity<User> createUser(@RequestBody UserRequestDTOs userRequestDTOs) throws Exception{
+    public ResponseEntity<String> createUser(@RequestBody UserRequestDTOs userRequestDTOs){
         User createdUser = userService.createUser(userRequestDTOs);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+        return ResponseEntity.created(null).body(createdUser.getLogin());
     }
 
     @PatchMapping("{user_id}")
-    public ResponseEntity<User> updateUser(@PathVariable("user_id") int id, @RequestBody UserRequestDTOs userRequestDTOs) throws Exception{
+    public ResponseEntity<User> updateUser(@PathVariable("user_id") int id, @RequestBody UserRequestDTOs userRequestDTOs) throws RuntimeException{
         User updatedUser = userService.updateUser(userRequestDTOs, id);
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable("id") int id) throws Exception{
+    public ResponseEntity<String> deleteUser(@PathVariable("id") int id) throws RuntimeException{
         userService.deleteUser(id);
-        return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
+        return ResponseEntity.ok("User deleted");
     }
 
 

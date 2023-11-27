@@ -27,39 +27,39 @@ public class EventController {
     
     private final EventService eventService;
     @GetMapping("")
-    public ResponseEntity<List<Event>> getEvents() throws Exception{
+    public ResponseEntity<List<Event>> getEvents() throws RuntimeException{
         List<Event> events = eventService.getEvents();
         if (events.isEmpty()) {
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(events);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Event> getEvent(@PathVariable("id") int id) throws Exception{
+    public ResponseEntity<Event> getEvent(@PathVariable("id") int id) throws RuntimeException{
         Event event = eventService.getEvent(id);
         if (event == null) {
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(event);
     }
 
     @PostMapping("")
-    public ResponseEntity<Event> createEvent(@RequestBody EventRequestDTOs eventRequestDTO) throws Exception{
+    public ResponseEntity<Event> createEvent(@RequestBody EventRequestDTOs eventRequestDTO) throws RuntimeException{
         Event event = eventService.createEvent(eventRequestDTO);
-        return new ResponseEntity<>(event, HttpStatus.CREATED);
+        return ResponseEntity.created(null).body(event);
     }
 
     @PatchMapping("{id}")
-    public ResponseEntity<Event> updateEvent(@PathVariable("id") int id, @RequestBody EventRequestDTOs eventRequestDTO) throws Exception{
+    public ResponseEntity<Event> updateEvent(@PathVariable("id") int id, @RequestBody EventRequestDTOs eventRequestDTO) throws RuntimeException{
         Event event = eventService.updateEvent(eventRequestDTO, id);
-        return new ResponseEntity<>(event, HttpStatus.OK);
+        return ResponseEntity.ok(event);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteEvent(@PathVariable("id") int id) throws Exception{
+    public ResponseEntity<String> deleteEvent(@PathVariable("id") int id) throws RuntimeException{
         eventService.deleteEvent(id);
-        return new ResponseEntity<>("Event deleted successfully", HttpStatus.OK);
+        return ResponseEntity.ok("Event deleted");
     }
     
 }
