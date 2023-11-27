@@ -66,20 +66,6 @@ public class Event {
     @Column(name = "end_point")
     private String endPoint;
 
-    public Event (EventRequestDTOs eventRequestDTOs, User promoter) {
-        this.name = eventRequestDTOs.getName();
-        this.description = eventRequestDTOs.getDescription();
-        this.visibility = eventRequestDTOs.getVisibility();
-        this.maxParticipants = eventRequestDTOs.getMaxParticipants();
-        this.startTime = eventRequestDTOs.getStartTime();
-        this.roadType1 = eventRequestDTOs.getRoadType1();
-        this.roadType2 = eventRequestDTOs.getRoadType2();
-        this.roadType3 = eventRequestDTOs.getRoadType3();
-        this.bikeType1 = eventRequestDTOs.getBikeType1();
-        this.bikeType2 = eventRequestDTOs.getBikeType2();
-        this.startPoint = eventRequestDTOs.getStartPoint();
-        this.endPoint = eventRequestDTOs.getEndPoint();
-        this.promoter = promoter;
-    }
+    
 
 }

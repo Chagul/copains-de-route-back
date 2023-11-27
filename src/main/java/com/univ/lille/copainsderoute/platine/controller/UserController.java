@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("users")
 @AllArgsConstructor
 public class UserController {
 
@@ -49,8 +49,8 @@ public class UserController {
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
-    @PatchMapping("{id}")
-    public ResponseEntity<User> updateUser(@PathVariable("id") int id, @RequestBody UserRequestDTOs userRequestDTOs) throws Exception{
+    @PatchMapping("{user_id}")
+    public ResponseEntity<User> updateUser(@PathVariable("user_id") int id, @RequestBody UserRequestDTOs userRequestDTOs) throws Exception{
         User updatedUser = userService.updateUser(userRequestDTOs, id);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }

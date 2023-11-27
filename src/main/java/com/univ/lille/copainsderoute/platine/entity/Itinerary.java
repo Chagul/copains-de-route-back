@@ -1,5 +1,7 @@
 package com.univ.lille.copainsderoute.platine.entity;
 
+import com.univ.lille.copainsderoute.platine.dtos.ItineraryRequestDTOs;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,7 +12,10 @@ import lombok.Data;
 
 @Entity
 @Data
+
 public class Itinerary {
+
+    
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,4 +26,6 @@ public class Itinerary {
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
+
+   
 }
