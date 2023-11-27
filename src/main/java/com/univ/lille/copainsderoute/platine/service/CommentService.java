@@ -24,16 +24,21 @@ public class CommentService {
 
     private EventRepository eventRepository;
 
-    public Comment createComment(CommentRequestDTOs commentRequestDTOs) throws Exception {
+    public Comment createComment(CommentRequestDTOs commentRequestDTOs) throws RuntimeException {
         Comment comment = new Comment();
 
         comment.setSubmissionTime(LocalDateTime.now());
         comment.setContent(commentRequestDTOs.getContent());
         comment.setLikes(commentRequestDTOs.getLikes());
 
-        Event event = eventRepository.findById(commentRequestDTOs.getEvent()).orElseThrow(() -> new Exception("Event not found"));
-        User user = userRepository.findById(commentRequestDTOs.getUserWhoCommented()).orElseThrow(() -> new Exception("User not found"));
-
+        Event event = eventRepository.findById(commentRequestDTOs.getEvent()).orElseThrow(() -> new RuntimeException("Event not found"));
+        User user = userRepository.findById(commentRequestDTOs.getUserWhoCommented()).orElseThrow(() -> new RuntimeException("User not found"));
+        if (event == null) {
+            throw new RuntimeException("Event not found");
+        }
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
         comment.setEvent(event);
         comment.setUserWhoCommented(user);
         return commentRepository.save(comment);
@@ -44,8 +49,8 @@ public class CommentService {
         return comments;
     }
 
-    public Comment updateComment(CommentRequestDTOs commentRequestDTOs, int id) throws Exception {
-        Comment comment = commentRepository.findById(id).orElseThrow(() -> new Exception("Comment not found"));
+    public Comment updateComment(CommentRequestDTOs commentRequestDTOs, int id) throws RuntimeException {
+        Comment comment = commentRepository.findById(id).orElseThrow(() -> new RuntimeException("Comment not found"));
 
         comment.setContent(commentRequestDTOs.getContent());
         comment.setLikes(commentRequestDTOs.getLikes());
@@ -53,8 +58,8 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    public void deleteComment(int id) throws Exception {
-        Comment comment = commentRepository.findById(id).orElseThrow(() -> new Exception("Comment not found"));
+    public void deleteComment(int id) throws RuntimeException {
+        Comment comment = commentRepository.findById(id).orElseThrow(() -> new RuntimeException("Comment not found"));
         commentRepository.delete(comment);
     }
 }

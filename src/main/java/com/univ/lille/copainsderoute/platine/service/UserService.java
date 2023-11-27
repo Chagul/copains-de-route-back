@@ -1,7 +1,6 @@
 package com.univ.lille.copainsderoute.platine.service;
 
 import com.univ.lille.copainsderoute.platine.repository.UserRepository;
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.univ.lille.copainsderoute.platine.dtos.UserRequestDTOs;
 import com.univ.lille.copainsderoute.platine.entity.User;
 
@@ -30,12 +29,6 @@ public class UserService {
         user.setLogin(userRequestDTO.getLogin());
         user.setEmail(userRequestDTO.getEmail());
         user.setPassword(userRequestDTO.getPassword());
-        user.setNumberEventsParticipated(userRequestDTO.getNumberEventsParticipated());
-        user.setNumberEventsCreated(userRequestDTO.getNumberEventsCreated());
-        user.setDistanceTraveled(userRequestDTO.getDistanceTraveled());
-        user.setCo2_not_emitted(userRequestDTO.getCo2_not_emitted());
-        user.setFriends(userRequestDTO.getFriends());
-        
 
         return userRepository.save(user);
 
@@ -45,9 +38,9 @@ public class UserService {
         return userRepository.findById(id).get();
     }
 
-    public User updateUser(UserRequestDTOs userRequestDTO, int id) {
+    public User updateUser(UserRequestDTOs userRequestDTO, int id) throws RuntimeException{
+        
         Optional<User> user = userRepository.findById(id);
-
         if (!user.isPresent()) {
             throw new RuntimeException("User not found");
         }
@@ -79,13 +72,6 @@ public class UserService {
         if (userRequestDTO.getCo2_not_emitted() != 0) {
             user.get().setCo2_not_emitted(userRequestDTO.getCo2_not_emitted());
         }
-
-        if (userRequestDTO.getFriends() != null) {
-            user.get().setFriends(userRequestDTO.getFriends());
-        }
-
-
-
 
         userRepository.save(user.get());
         return user.get();

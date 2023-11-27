@@ -22,15 +22,16 @@ public class ItineraryService {
     private ItineraryRepository itineraryRepository;
     private EventRepository eventRepository;
 
-    public List<Itinerary> getItinerary() throws Exception {
+    public List<Itinerary> getItinerary() throws RuntimeException {
         return itineraryRepository.findAll();
     }
 
-    public Itinerary createItinerary(ItineraryRequestDTOs itineraryRequestDTOs) throws Exception {
+    public Itinerary createItinerary(ItineraryRequestDTOs itineraryRequestDTOs) throws RuntimeException {
         int event_id = itineraryRequestDTOs.getEvent();
         Optional<Event> event = eventRepository.findById(event_id);
+
         if (!event.isPresent()) {
-            throw new Exception("Event not found");
+            throw new RuntimeException("Event not found");
         }
         Itinerary itinerary = new Itinerary();
         itinerary.setEvent(event.get());
@@ -41,23 +42,28 @@ public class ItineraryService {
     }
 
 
-    public List<Itinerary> getItineraryByEvent(int id) throws Exception {
+    public List<Itinerary> getItineraryByEvent(int id) throws RuntimeException {
+
         Optional<Event> event = eventRepository.findById(id);
         if (!event.isPresent()) {
-            throw new Exception("Event not found");
+            throw new RuntimeException("Event not found");
         }
         List<Itinerary> itineraries = itineraryRepository.findByEvent(event.get());
-    
+        if (itineraries.isEmpty()) {
+            throw new RuntimeException("Itinerary not found");
+        }
+
         // Utiliser Comparator.comparingInt() pour trier par le champ rank et avoir la liste trier par ordre croissant
        Collections.sort(itineraries, Comparator.comparingInt(Itinerary::getRank));
     
         return itineraries;
     }
     
-    public Itinerary patchItinerary(ItineraryRequestDTOs itineraryRequestDTOs, int id) throws Exception {
+    public Itinerary patchItinerary(ItineraryRequestDTOs itineraryRequestDTOs, int id) throws RuntimeException {
+
         Optional<Itinerary> itinerary = itineraryRepository.findById(id);
         if (!itinerary.isPresent()) {
-            throw new Exception("Itinerary not found");
+            throw new RuntimeException("Itinerary not found");
         }
 
         if (itineraryRequestDTOs.getPoint() != null) {
@@ -71,10 +77,11 @@ public class ItineraryService {
         return itineraryRepository.save(itinerary.get());
     }
 
-    public void deleteItinerary(int id) throws Exception {
+    public void deleteItinerary(int id) throws RuntimeException {
+
         Optional<Itinerary> itinerary = itineraryRepository.findById(id);
         if (!itinerary.isPresent()) {
-            throw new Exception("Itinerary not found");
+            throw new RuntimeException("Itinerary not found");
         }
         itineraryRepository.delete(itinerary.get());
     }

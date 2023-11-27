@@ -21,13 +21,14 @@ public class FriendsService {
 
     private UserRepository userRepository;
 
-    public FriendRequestStatus sendFriendRequest(FriendsRequestDTOs friendsRequestDTOs) {
+    public FriendRequestStatus sendFriendRequest(FriendsRequestDTOs friendsRequestDTOs) throws RuntimeException{
         
         Friends friends = new Friends();
+
         User user1 = userRepository.findByLogin(friendsRequestDTOs.getLoginUser1());
         User user2 = userRepository.findByLogin(friendsRequestDTOs.getLoginUser2());
-        if (user1 == null ) {
 
+        if (user1 == null ) {
             throw new RuntimeException("User 1 not found");
         }
 

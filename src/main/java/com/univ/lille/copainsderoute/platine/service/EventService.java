@@ -34,10 +34,14 @@ public class EventService {
      * create an event
      * @return id of the event
      */
-    public Event createEvent(EventRequestDTOs eventRequestDTO) {
+    public Event createEvent(EventRequestDTOs eventRequestDTO) throws RuntimeException{
 
         User promoter = userRepository.findById(eventRequestDTO.getPromoter()).get();
+        if (promoter == null) {
+            throw new RuntimeException ("Promoter not found");
+        }
         Event evt = new Event();
+
         evt.setName(eventRequestDTO.getName());
         evt.setDescription(eventRequestDTO.getDescription());
         evt.setVisibility(eventRequestDTO.getVisibility());
@@ -58,9 +62,13 @@ public class EventService {
     
     }
 
-        public Event updateEvent (EventRequestDTOs eventRequestDTO, int id) {
+        public Event updateEvent (EventRequestDTOs eventRequestDTO, int id) throws RuntimeException {
 
             Event evt = eventRepository.findById(id).get();
+
+            if (evt == null) {
+                throw new RuntimeException("Event not found");
+            }
 
             if (eventRequestDTO.getName() != null) {
                 evt.setName(eventRequestDTO.getName());
@@ -120,8 +128,11 @@ public class EventService {
             eventRepository.deleteById(id);
         }
 
-        public Event getEvent(int id) {
+        public Event getEvent(int id) throws RuntimeException {
             Optional<Event> evt = eventRepository.findById(id);
+            if (evt == null) {
+                throw new RuntimeException("Event not found");
+            }
             return evt.get();
         }
 }
