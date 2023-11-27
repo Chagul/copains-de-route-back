@@ -1,7 +1,5 @@
 package com.univ.lille.copainsderoute.platine.entity;
 
-import com.univ.lille.copainsderoute.platine.dtos.ItineraryRequestDTOs;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
