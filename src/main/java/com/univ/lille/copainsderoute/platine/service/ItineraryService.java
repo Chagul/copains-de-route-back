@@ -35,7 +35,8 @@ public class ItineraryService {
         }
         Itinerary itinerary = new Itinerary();
         itinerary.setEvent(event.get());
-        itinerary.setPoint(itineraryRequestDTOs.getPoint());
+        itinerary.setLatitude(itineraryRequestDTOs.getLatitude());
+        itinerary.setLongitude(itineraryRequestDTOs.getLongitude());
         itinerary.setRank(itineraryRequestDTOs.getRank());
 
         return itineraryRepository.save(itinerary);
@@ -66,10 +67,12 @@ public class ItineraryService {
             throw new RuntimeException("Itinerary not found");
         }
 
-        if (itineraryRequestDTOs.getPoint() != null) {
-            itinerary.get().setPoint(itineraryRequestDTOs.getPoint());
+        if (itineraryRequestDTOs.getLatitude() !=0) {
+            itinerary.get().setLatitude(itineraryRequestDTOs.getLatitude());
         }
-
+        if (itineraryRequestDTOs.getLongitude() != 0) {
+            itinerary.get().setLongitude(itineraryRequestDTOs.getLongitude());
+        }
         if (itineraryRequestDTOs.getRank() != 0) {
             itinerary.get().setRank(itineraryRequestDTOs.getRank());
         

@@ -19,7 +19,8 @@ public class Itinerary {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private int rank;
-    private String point;
+    private double latitude;
+    private double longitude;
 
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
