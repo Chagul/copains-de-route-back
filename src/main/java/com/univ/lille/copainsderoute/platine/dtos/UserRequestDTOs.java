@@ -1,13 +1,6 @@
 package com.univ.lille.copainsderoute.platine.dtos;
 
-import java.time.LocalDateTime;
-
-
 import com.univ.lille.copainsderoute.platine.entity.Friends;
-import com.univ.lille.copainsderoute.platine.enums.RoadType;
-import com.univ.lille.copainsderoute.platine.enums.Visibility;
-
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
