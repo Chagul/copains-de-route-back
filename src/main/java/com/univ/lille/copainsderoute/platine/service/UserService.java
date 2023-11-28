@@ -22,13 +22,13 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User createUser(UserRequestDTOs userRequestDTOs) {
+    public User createUser(UserRequestDTOs userRequestDTO) {
     
         User user = new User();
 
-        user.setLogin(userRequestDTOs.getLogin());
-        user.setEmail(userRequestDTOs.getEmail());
-        user.setPassword(userRequestDTOs.getPassword());
+        user.setLogin(userRequestDTO.getLogin());
+        user.setEmail(userRequestDTO.getEmail());
+        user.setPassword(userRequestDTO.getPassword());
 
         return userRepository.save(user);
 

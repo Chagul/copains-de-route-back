@@ -67,10 +67,10 @@ public class ItineraryService {
             throw new RuntimeException("Itinerary not found");
         }
 
-        if (itineraryRequestDTOs.getLatitude() !=0) {
+        if (itineraryRequestDTOs.getLatitude() != null) {
             itinerary.get().setLatitude(itineraryRequestDTOs.getLatitude());
         }
-        if (itineraryRequestDTOs.getLongitude() != 0) {
+        if (itineraryRequestDTOs.getLongitude() != null) {
             itinerary.get().setLongitude(itineraryRequestDTOs.getLongitude());
         }
         if (itineraryRequestDTOs.getRank() != 0) {

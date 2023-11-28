@@ -12,9 +12,9 @@ public class ItineraryRequestDTOs {
     
     private int rank;
     
-    private double latitude;
+    private Double latitude;
 
-    private double longitude;
+    private Double longitude;
 
     private int event;
 }
