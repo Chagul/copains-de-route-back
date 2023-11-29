@@ -9,7 +9,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 
 @Entity
@@ -41,7 +42,7 @@ public class User {
     private int co2_not_emitted;
 
     @OneToMany(mappedBy = "user1")
-    private Set<Friends> friends;
+    private List <Friends> friends = new ArrayList<>();
 
     // TODO add profile image
 

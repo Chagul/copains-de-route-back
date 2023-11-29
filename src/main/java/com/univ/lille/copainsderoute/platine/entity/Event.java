@@ -3,6 +3,8 @@ package com.univ.lille.copainsderoute.platine.entity;
 import com.univ.lille.copainsderoute.platine.enums.BikeType;
 import com.univ.lille.copainsderoute.platine.enums.RoadType;
 import com.univ.lille.copainsderoute.platine.enums.Visibility;
+
+import ch.qos.logback.core.joran.sanity.Pair;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,7 +17,10 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+
+
 
 @Entity
 @Data
@@ -33,8 +38,9 @@ public class Event {
     @OneToOne
     private User promoter;
 
-    @OneToMany(mappedBy = "event")
-    private Set<Itinerary> itineraryPoints;
+    @Column(name = "itinerary_points")
+    @OneToMany
+    private List<Itinerary> itineraryPoints = new ArrayList<>(); 
 
     @Column(name = "max_participants")
     private int maxParticipants;
@@ -63,6 +69,10 @@ public class Event {
     @Column(name = "end_point")
     private String endPoint;
 
+
+
     
 
 }
+
+
