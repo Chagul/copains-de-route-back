@@ -155,17 +155,13 @@ public class EventService {
                 List<Itinerary> itineraries = eventRepository.findById(event.getId()).get().getItineraryPoints();
                 Collections.sort(itineraries, Comparator.comparingInt(Itinerary::getRank));
                 Itinerary itinerary = itineraries.get(0);
+
                 boolean isInside = this.isInside(gpsCoordinatesDTOs, itinerary.getLatitude(), itinerary.getLongitude());
                 if (isInside) {
                     eventsByLocation.add(event);
                         }
                     
-
-                
-
-                   
-                
-            }
+           }
                 return eventsByLocation;
 
             
@@ -174,15 +170,17 @@ public class EventService {
 
         public boolean isInside(GpsCoordinatesDTOs gpsCoordinatesDTOs, Double latitude, Double longitude) {
             
+            // Création des points du "rectangle"
             Coordinate northeast = new Coordinate(gpsCoordinatesDTOs.getNortheastLatitude(), gpsCoordinatesDTOs.getNortheastLongitude());
             Coordinate southwest = new Coordinate(gpsCoordinatesDTOs.getSouthwestLatitude(), gpsCoordinatesDTOs.getSouthwestLongitude());
             Coordinate northwest = new Coordinate(gpsCoordinatesDTOs.getNorthwestLatitude(), gpsCoordinatesDTOs.getNorthwestLongitude());
             Coordinate southeast = new Coordinate(gpsCoordinatesDTOs.getSoutheastLatitude(), gpsCoordinatesDTOs.getSoutheastLongitude());
 
+            // Création du point lambda
             Coordinate lambdaCoord = new Coordinate(latitude, longitude);
 
             GeometryFactory geometryFactory = new GeometryFactory();
-            Coordinate[] coordinates = { northeast, northwest, southwest, southeast, northeast }; // Assurez-vous que les points sont dans l'ordre
+            Coordinate[] coordinates = { northeast, northwest, southwest, southeast, northeast };
             Polygon rectangle = geometryFactory.createPolygon(coordinates);
 
             Point lambdaPoint = geometryFactory.createPoint(lambdaCoord);

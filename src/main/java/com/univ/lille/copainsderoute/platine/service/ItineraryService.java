@@ -28,8 +28,11 @@ public class ItineraryService {
     public Itinerary createItinerary(ItineraryRequestDTOs itineraryRequestDTOs) throws RuntimeException {
 
         int event_id = itineraryRequestDTOs.getEvent();
+        
         Optional<Event> event = eventRepository.findById(event_id);
-
+        if (!event.isPresent()) {
+            throw new RuntimeException("Event not found");
+        }
       
         Itinerary itinerary = new Itinerary();
         itinerary.setEvent(event_id);
