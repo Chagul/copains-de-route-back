@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.univ.lille.copainsderoute.platine.dtos.EventRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.GpsCoordinatesDTOs;
 import com.univ.lille.copainsderoute.platine.entity.Event;
 import com.univ.lille.copainsderoute.platine.service.EventService;
 
@@ -61,4 +62,24 @@ public class EventController {
         return ResponseEntity.ok("Event deleted");
     }
     
-}
+   @GetMapping("{northeastLatitude}/{northeastLongitude}/{southwestLatitude}/{southwestLongitude}/{northwestLatitude}/{northwestLongitude}/{southeastLatitude}/{southeastLongitude}")
+    public ResponseEntity<List<Event>> getEventsByLocation(
+            @PathVariable("northeastLatitude") Double northeastLatitude,
+            @PathVariable("northeastLongitude") Double northeastLongitude,
+            @PathVariable("southwestLatitude") Double southwestLatitude,
+            @PathVariable("southwestLongitude") Double southwestLongitude,
+            @PathVariable("northwestLatitude") Double northwestLatitude,
+            @PathVariable("northwestLongitude") Double northwestLongitude,
+            @PathVariable("southeastLatitude") Double southeastLatitude,
+            @PathVariable("southeastLongitude") Double southeastLongitude
+    ) throws RuntimeException {
+
+        GpsCoordinatesDTOs gpsCoordinatesDTOs = new GpsCoordinatesDTOs(northeastLatitude, northeastLongitude, southwestLatitude, southwestLongitude, northwestLatitude, northwestLongitude, southeastLatitude, southeastLongitude);
+        List<Event> itinerary = eventService.getEventsByLocation(gpsCoordinatesDTOs);
+        if (itinerary == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(itinerary);
+    }
+    }
+

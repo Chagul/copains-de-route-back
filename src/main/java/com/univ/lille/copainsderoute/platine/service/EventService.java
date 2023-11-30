@@ -5,12 +5,21 @@ import com.univ.lille.copainsderoute.platine.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.springframework.stereotype.Service;
 
 import com.univ.lille.copainsderoute.platine.dtos.EventRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.GpsCoordinatesDTOs;
 import com.univ.lille.copainsderoute.platine.entity.Event;
+import com.univ.lille.copainsderoute.platine.entity.Itinerary;
 import com.univ.lille.copainsderoute.platine.entity.User;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -135,4 +144,52 @@ public class EventService {
             }
             return evt.get();
         }
+
+        public List<Event> getEventsByLocation(GpsCoordinatesDTOs gpsCoordinatesDTOs) {
+
+            List<Event> events = eventRepository.findAll();
+            List<Event> eventsByLocation = new ArrayList<Event>();
+
+            for (Event event : events) {
+
+                List<Itinerary> itineraries = eventRepository.findById(event.getId()).get().getItineraryPoints();
+                Collections.sort(itineraries, Comparator.comparingInt(Itinerary::getRank));
+                Itinerary itinerary = itineraries.get(0);
+                boolean isInside = this.isInside(gpsCoordinatesDTOs, itinerary.getLatitude(), itinerary.getLongitude());
+                if (isInside) {
+                    eventsByLocation.add(event);
+                        }
+                    
+
+                
+
+                   
+                
+            }
+                return eventsByLocation;
+
+            
+        
+        }
+
+        public boolean isInside(GpsCoordinatesDTOs gpsCoordinatesDTOs, Double latitude, Double longitude) {
+            
+            Coordinate northeast = new Coordinate(gpsCoordinatesDTOs.getNortheastLatitude(), gpsCoordinatesDTOs.getNortheastLongitude());
+            Coordinate southwest = new Coordinate(gpsCoordinatesDTOs.getSouthwestLatitude(), gpsCoordinatesDTOs.getSouthwestLongitude());
+            Coordinate northwest = new Coordinate(gpsCoordinatesDTOs.getNorthwestLatitude(), gpsCoordinatesDTOs.getNorthwestLongitude());
+            Coordinate southeast = new Coordinate(gpsCoordinatesDTOs.getSoutheastLatitude(), gpsCoordinatesDTOs.getSoutheastLongitude());
+
+            Coordinate lambdaCoord = new Coordinate(latitude, longitude);
+
+            GeometryFactory geometryFactory = new GeometryFactory();
+            Coordinate[] coordinates = { northeast, northwest, southwest, southeast, northeast }; // Assurez-vous que les points sont dans l'ordre
+            Polygon rectangle = geometryFactory.createPolygon(coordinates);
+
+            Point lambdaPoint = geometryFactory.createPoint(lambdaCoord);
+
+            return rectangle.contains(lambdaPoint);
+            
+        }
+
+
 }

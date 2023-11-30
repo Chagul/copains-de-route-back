@@ -6,7 +6,6 @@ import com.univ.lille.copainsderoute.platine.repository.ItineraryRepository;
 import lombok.AllArgsConstructor;
 
 import org.springframework.stereotype.Service;
-
 import com.univ.lille.copainsderoute.platine.dtos.ItineraryRequestDTOs;
 import com.univ.lille.copainsderoute.platine.entity.Event;
 import com.univ.lille.copainsderoute.platine.entity.Itinerary;
@@ -27,20 +26,23 @@ public class ItineraryService {
     }
 
     public Itinerary createItinerary(ItineraryRequestDTOs itineraryRequestDTOs) throws RuntimeException {
+
         int event_id = itineraryRequestDTOs.getEvent();
         Optional<Event> event = eventRepository.findById(event_id);
 
-        if (!event.isPresent()) {
-            throw new RuntimeException("Event not found");
-        }
+      
         Itinerary itinerary = new Itinerary();
-        itinerary.setEvent(event.get());
+        itinerary.setEvent(event_id);
         itinerary.setLatitude(itineraryRequestDTOs.getLatitude());
         itinerary.setLongitude(itineraryRequestDTOs.getLongitude());
         itinerary.setRank(itineraryRequestDTOs.getRank());
 
-        return itineraryRepository.save(itinerary);
+        event.get().getItineraryPoints().add(itinerary);
+        
+        itineraryRepository.save(itinerary);
+        return itinerary;
     }
+    
 
 
     public List<Itinerary> getItineraryByEvent(int id) throws RuntimeException {
@@ -49,7 +51,7 @@ public class ItineraryService {
         if (!event.isPresent()) {
             throw new RuntimeException("Event not found");
         }
-        List<Itinerary> itineraries = itineraryRepository.findByEvent(event.get());
+        List<Itinerary> itineraries = itineraryRepository.findByEvent(id);
         if (itineraries.isEmpty()) {
             throw new RuntimeException("Itinerary not found");
         }
