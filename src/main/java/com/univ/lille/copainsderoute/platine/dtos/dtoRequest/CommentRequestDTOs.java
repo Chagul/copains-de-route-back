@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class CommentRequestDTOs {
 
     private String content;
-    private int userWhoCommented;
+    private String userWhoCommented;
     private int event;
     private int likes;
    

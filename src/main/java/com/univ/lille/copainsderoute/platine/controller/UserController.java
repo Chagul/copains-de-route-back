@@ -2,7 +2,6 @@ package com.univ.lille.copainsderoute.platine.controller;
 
 import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.UserRequestDTOs;
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.UserResponseDTOs;
-import com.univ.lille.copainsderoute.platine.entity.User;
 import com.univ.lille.copainsderoute.platine.service.UserService;
 
 import org.springframework.http.HttpStatus;

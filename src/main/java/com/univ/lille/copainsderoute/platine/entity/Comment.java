@@ -25,13 +25,9 @@ public class Comment {
     private String content;
     private LocalDateTime submissionTime;
 
-    @ManyToOne
-    @JoinColumn(name = "user_who_commented" )
-    private User userWhoCommented;
+    private String userWhoCommented;
 
-    @ManyToOne
-    @JoinColumn(name = "event" )
-    private Event event;
+    private int eventId;
     private int likes;
 
     // TODO add image in comment (optional)

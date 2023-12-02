@@ -29,31 +29,37 @@ public class CommentService {
 
         comment.setSubmissionTime(LocalDateTime.now());
         comment.setContent(commentRequestDTOs.getContent());
-        comment.setLikes(commentRequestDTOs.getLikes());
+        comment.setLikes(0);
 
         Event event = eventRepository.findById(commentRequestDTOs.getEvent()).orElseThrow(() -> new RuntimeException("Event not found"));
-        User user = userRepository.findById(commentRequestDTOs.getUserWhoCommented()).orElseThrow(() -> new RuntimeException("User not found"));
-        if (event == null) {
-            throw new RuntimeException("Event not found");
-        }
+        User user = userRepository.findByLogin(commentRequestDTOs.getUserWhoCommented());
+
         if (user == null) {
             throw new RuntimeException("User not found");
         }
-        comment.setEvent(event);
-        comment.setUserWhoCommented(user);
+        comment.setEventId(commentRequestDTOs.getEvent());
+        comment.setUserWhoCommented(commentRequestDTOs.getUserWhoCommented());
+
+        List<String> comments = event.getComments();
+        comments.add(comment.getContent());
+        event.setComments(comments);
+
         return commentRepository.save(comment);
     }
 
     public List<Comment> getAllCommentsByEvent(int id) {
-        List<Comment> comments = commentRepository.findAllByEvent_Id(id);
+        List<Comment> comments = commentRepository.findAllByEventId(id);
         return comments;
     }
 
     public Comment updateComment(CommentRequestDTOs commentRequestDTOs, int id) throws RuntimeException {
         Comment comment = commentRepository.findById(id).orElseThrow(() -> new RuntimeException("Comment not found"));
-
-        comment.setContent(commentRequestDTOs.getContent());
-        comment.setLikes(commentRequestDTOs.getLikes());
+        if (commentRequestDTOs.getContent() != null){
+            comment.setContent(commentRequestDTOs.getContent());
+        }
+        if (commentRequestDTOs.getLikes() != 0) {
+            comment.setLikes(comment.getLikes()+1);
+        }
 
         return commentRepository.save(comment);
     }

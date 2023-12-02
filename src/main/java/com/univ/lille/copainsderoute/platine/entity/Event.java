@@ -47,8 +47,7 @@ public class Event {
     private List<User> participants = new ArrayList<>();
 
     @Column(name="comments")
-    @OneToMany
-    private List<Comment> comments = new ArrayList<>();
+    private List<String> comments = new ArrayList<>();
 
     @Column(name = "max_participants")
     private int maxParticipants;

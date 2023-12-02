@@ -56,8 +56,8 @@ public class EventResponseDTOs {
         this.bikeType2 = event.getBikeType2();
         this.startPoint = event.getStartPoint().toString();
         this.endPoint = event.getEndPoint().toString();
-        for (Comment comment : event.getComments()) {
-            this.comments.add(comment.getContent());
+        for (String comment : event.getComments()) {
+            this.comments.add(comment);
         }
 
         for (User participant : event.getParticipants()) {
