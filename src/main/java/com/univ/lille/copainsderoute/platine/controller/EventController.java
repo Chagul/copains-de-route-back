@@ -73,6 +73,10 @@ public class EventController {
         }
         return ResponseEntity.ok(itinerary);
     }
-    
-    }
 
+    @PostMapping("/participate/{id}/{userLogin}")
+    public ResponseEntity<String> participate(@PathVariable("id") int id, @PathVariable("userLogin") String userLogin) throws RuntimeException{
+        eventService.participate(id, userLogin);
+        return ResponseEntity.ok("User added to the event");    
+    }
+}

@@ -45,4 +45,6 @@ public class EventRequestDTOs {
   
   private Visibility visibility;
 
+  private int distance;
+
 }

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import com.univ.lille.copainsderoute.platine.entity.Comment;
 import com.univ.lille.copainsderoute.platine.entity.Event;
@@ -36,8 +37,8 @@ public class EventResponseDTOs {
     private String startPoint;
     private String endPoint;
 
-    private List<String> comments;
-    private List<String> participants;
+    private List<String> comments = new ArrayList<>();
+    private List<String> participants = new ArrayList<>();
 
     private int distance;
     public EventResponseDTOs(Event event) {

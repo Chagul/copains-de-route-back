@@ -75,6 +75,9 @@ public class EventService {
         evt.setStartPoint(eventRequestDTO.getStartPoint());
         evt.setEndPoint(eventRequestDTO.getEndPoint());
         evt.setPromoter(promoter);
+        evt.setDistance(eventRequestDTO.getDistance());
+
+        promoter.setNumberEventsCreated(promoter.getNumberEventsCreated() + 1);
         
 
         eventRepository.save(evt);
@@ -200,6 +203,21 @@ public class EventService {
 
             return rectangle.contains(lambdaPoint);
             
+        }
+
+        public void participate(int id, String userLogin) throws RuntimeException {
+            Event event = eventRepository.findById(id).get();
+            if (event == null) {
+                throw new RuntimeException("Event not found");
+            }
+            User user = userRepository.findByLogin(userLogin);
+            if (user == null) {
+                throw new RuntimeException("User not found");
+            }
+            event.getParticipants().add(user);
+            user.setNumberEventsParticipated(user.getNumberEventsParticipated() + 1);
+
+            eventRepository.save(event);
         }
 
 
