@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.EventRequestDTOs;
 import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.GpsCoordinatesDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.EventResponseDTOs;
 import com.univ.lille.copainsderoute.platine.entity.Event;
 import com.univ.lille.copainsderoute.platine.entity.ItineraryPoint;
 import com.univ.lille.copainsderoute.platine.entity.User;
@@ -38,15 +39,21 @@ public class EventService {
      * get all events
      * @return
      */
-    public List<Event> getEvents() {
-        return eventRepository.findByStartDateGreaterThanEqual(LocalDate.now());
+    public List<EventResponseDTOs> getEvents() {
+        List<Event> events = eventRepository.findAll();
+        List<EventResponseDTOs> eventResponseDTOs = new ArrayList<>();
+        for (Event event : events) {
+            eventResponseDTOs.add(new EventResponseDTOs(event));
+        }
+        return eventResponseDTOs;
+
     }
 
     /**
      * create an event
      * @return id of the event
      */
-    public Event createEvent(EventRequestDTOs eventRequestDTO) throws RuntimeException{
+    public String createEvent(EventRequestDTOs eventRequestDTO) throws RuntimeException{
 
         User promoter = userRepository.findById(eventRequestDTO.getPromoter()).get();
         if (promoter == null) {
@@ -71,7 +78,8 @@ public class EventService {
         
 
         eventRepository.save(evt);
-        return evt;
+
+        return evt.getName();
     
     }
 
@@ -145,12 +153,13 @@ public class EventService {
             eventRepository.deleteById(id);
         }
 
-        public Event getEvent(int id) throws RuntimeException {
+        public EventResponseDTOs getEvent(int id) throws RuntimeException {
             Optional<Event> evt = eventRepository.findById(id);
             if (evt == null) {
                 throw new RuntimeException("Event not found");
             }
-            return evt.get();
+            EventResponseDTOs eventResponseDTOs = new EventResponseDTOs(evt.get());
+            return eventResponseDTOs;
         }
 
         public List<Event> getEventsByLocation(GpsCoordinatesDTOs gpsCoordinatesDTOs) {

@@ -42,6 +42,14 @@ public class Event {
     @OneToMany
     private List<ItineraryPoint> itineraryPoints = new ArrayList<>(); 
 
+    @Column(name ="participants")
+    @OneToMany
+    private List<User> participants = new ArrayList<>();
+
+    @Column(name="comments")
+    @OneToMany
+    private List<Comment> comments = new ArrayList<>();
+
     @Column(name = "max_participants")
     private int maxParticipants;
 
