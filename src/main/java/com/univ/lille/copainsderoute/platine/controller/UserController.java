@@ -36,11 +36,8 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<User> getUser(@PathVariable("id") int id) throws RuntimeException{
-        User user = userService.getUser(id);
-        if (user == null) {
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        }
+    public ResponseEntity<UserResponseDTOs> getUser(@PathVariable("id") int id) throws RuntimeException{
+        UserResponseDTOs user = userService.getUser(id);
         return ResponseEntity.ok(user);
     }
 
@@ -51,9 +48,9 @@ public class UserController {
     }
 
     @PatchMapping("{user_id}")
-    public ResponseEntity<User> updateUser(@PathVariable("user_id") int id, @RequestBody UserRequestDTOs userRequestDTOs) throws RuntimeException{
-        User updatedUser = userService.updateUser(userRequestDTOs, id);
-        return ResponseEntity.ok(updatedUser);
+    public ResponseEntity<String> updateUser(@PathVariable("user_id") int id, @RequestBody UserRequestDTOs userRequestDTOs) throws RuntimeException{
+        userService.updateUser(userRequestDTOs, id);
+        return ResponseEntity.ok("User updated");
     }
 
     @DeleteMapping("{id}")
