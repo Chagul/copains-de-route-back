@@ -1,13 +1,17 @@
 package com.univ.lille.copainsderoute.platine.service;
 
 import com.univ.lille.copainsderoute.platine.repository.UserRepository;
-import com.univ.lille.copainsderoute.platine.dtos.UserRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.*;
+import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.UserResponseDTOs;
 import com.univ.lille.copainsderoute.platine.entity.User;
+
 
 
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,11 +22,17 @@ public class UserService {
     private UserRepository userRepository;
 
 
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public List<UserResponseDTOs> getUsers() {
+        List<User> users = userRepository.findAll();
+        List<UserResponseDTOs> userResponseDTOs = new ArrayList<>();
+        for (User user : users) {
+            UserResponseDTOs userResponseDTO = new UserResponseDTOs(user.getLogin());
+            userResponseDTOs.add(userResponseDTO);
+            }
+        return userResponseDTOs;
     }
 
-    public User createUser(UserRequestDTOs userRequestDTO) {
+    public UserResponseDTOs createUser(UserRequestDTOs userRequestDTO) {
     
         User user = new User();
 
@@ -30,8 +40,11 @@ public class UserService {
         user.setEmail(userRequestDTO.getEmail());
         user.setPassword(userRequestDTO.getPassword());
 
-        return userRepository.save(user);
+        userRepository.save(user);
 
+        UserResponseDTOs userResponseDTO = new UserResponseDTOs(user.getLogin());
+
+        return userResponseDTO;
     }
 
     public User getUser(int id) {

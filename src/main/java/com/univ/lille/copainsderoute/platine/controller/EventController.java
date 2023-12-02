@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.univ.lille.copainsderoute.platine.dtos.EventRequestDTOs;
-import com.univ.lille.copainsderoute.platine.dtos.GpsCoordinatesDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.EventRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.GpsCoordinatesDTOs;
 import com.univ.lille.copainsderoute.platine.entity.Event;
 import com.univ.lille.copainsderoute.platine.service.EventService;
 

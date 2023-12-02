@@ -1,6 +1,6 @@
 package com.univ.lille.copainsderoute.platine.service;
 
-import com.univ.lille.copainsderoute.platine.dtos.FriendsRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.FriendsRequestDTOs;
 import com.univ.lille.copainsderoute.platine.entity.Friends;
 import com.univ.lille.copainsderoute.platine.entity.User;
 import com.univ.lille.copainsderoute.platine.enums.FriendRequestStatus;

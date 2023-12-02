@@ -13,7 +13,7 @@ import com.univ.lille.copainsderoute.platine.service.ItineraryPointService;
 
 import lombok.AllArgsConstructor;
 
-import com.univ.lille.copainsderoute.platine.dtos.ItineraryPointRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.ItineraryPointRequestDTOs;
 import com.univ.lille.copainsderoute.platine.entity.ItineraryPoint;
 import java.util.List;
 

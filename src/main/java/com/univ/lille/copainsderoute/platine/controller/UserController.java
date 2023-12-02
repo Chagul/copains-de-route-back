@@ -1,6 +1,7 @@
 package com.univ.lille.copainsderoute.platine.controller;
 
-import com.univ.lille.copainsderoute.platine.dtos.UserRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.UserRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.UserResponseDTOs;
 import com.univ.lille.copainsderoute.platine.entity.User;
 import com.univ.lille.copainsderoute.platine.service.UserService;
 
@@ -26,8 +27,8 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("")
-    public ResponseEntity<List<User>> getUsers() throws RuntimeException{
-        List<User> users = userService.getUsers();
+    public ResponseEntity<List<UserResponseDTOs>> getUsers() throws RuntimeException{
+        List<UserResponseDTOs> users = userService.getUsers();
         if (users.isEmpty()) {
             return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
@@ -44,9 +45,9 @@ public class UserController {
     }
 
     @PostMapping("")
-    public ResponseEntity<String> createUser(@RequestBody UserRequestDTOs userRequestDTOs){
-        User createdUser = userService.createUser(userRequestDTOs);
-        return ResponseEntity.created(null).body(createdUser.getLogin());
+    public ResponseEntity<UserResponseDTOs> createUser(@RequestBody UserRequestDTOs userRequestDTOs){
+        UserResponseDTOs createdUser = userService.createUser(userRequestDTOs);
+        return ResponseEntity.created(null).body(createdUser);
     }
 
     @PatchMapping("{user_id}")

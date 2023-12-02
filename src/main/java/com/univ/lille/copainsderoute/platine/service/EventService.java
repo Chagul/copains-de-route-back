@@ -12,8 +12,8 @@ import org.locationtech.jts.geom.Polygon;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
-import com.univ.lille.copainsderoute.platine.dtos.EventRequestDTOs;
-import com.univ.lille.copainsderoute.platine.dtos.GpsCoordinatesDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.EventRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.GpsCoordinatesDTOs;
 import com.univ.lille.copainsderoute.platine.entity.Event;
 import com.univ.lille.copainsderoute.platine.entity.ItineraryPoint;
 import com.univ.lille.copainsderoute.platine.entity.User;

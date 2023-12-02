@@ -6,7 +6,7 @@ import com.univ.lille.copainsderoute.platine.repository.ItineraryPointRepository
 import lombok.AllArgsConstructor;
 
 import org.springframework.stereotype.Service;
-import com.univ.lille.copainsderoute.platine.dtos.ItineraryPointRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.ItineraryPointRequestDTOs;
 import com.univ.lille.copainsderoute.platine.entity.Event;
 import com.univ.lille.copainsderoute.platine.entity.ItineraryPoint;
 import java.util.List;

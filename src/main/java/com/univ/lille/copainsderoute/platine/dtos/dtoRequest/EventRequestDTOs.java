@@ -1,4 +1,4 @@
-package com.univ.lille.copainsderoute.platine.dtos;
+package com.univ.lille.copainsderoute.platine.dtos.dtoRequest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

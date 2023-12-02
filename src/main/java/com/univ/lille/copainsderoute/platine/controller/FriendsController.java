@@ -5,9 +5,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.univ.lille.copainsderoute.platine.dtos.FriendsRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.FriendsRequestDTOs;
 import com.univ.lille.copainsderoute.platine.enums.FriendRequestStatus;
 import com.univ.lille.copainsderoute.platine.service.FriendsService;
+
 
 import lombok.AllArgsConstructor;
 
