@@ -1,0 +1,56 @@
+# This workflow will build a docker container, publish it to Google Container Registry, and deploy it to Cloud RUN when there is a push to the "main" branch.
+#
+
+name: Build and Deploy to CLOUD RUN
+
+on:
+  push:
+    branches: 
+    - "main"
+
+env:
+  PROJECT_ID: ${{ secrets.PROJECT_ID }}
+  GAR_LOCATION: europe-west1
+  GKE_SA_KEY:  ${{ secrets.GKE_SA_KEY }}
+  DEPLOYMENT_NAME: test 
+  SERVICE_ACCOUNT_KEY: ${{secrets.SERVICE_ACCOUNT_KEY }}
+  IMAGE: app
+
+jobs:
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # Setup gcloud CLI
+    - uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: ${{ env.SERVICE_ACCOUNT_KEY }}
+        project_id: ${{ secrets.GKE_PROJECT }}
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v1'
+      with:
+        project_id: '${{ env.PROJECT_ID }}'
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+    - name: "mvn package"
+      run: |-
+        mvn clean package -DskipTests
+    - name: 'Build and push container'
+      run: |-
+          gcloud auth configure-docker ${{ env.GAR_LOCATION }}-docker.pkg.dev
+          docker build -t "europe-west1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/copains-de-route-repo/app:app" .
+          docker push "europe-west1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/copains-de-route-repo/app:app"
+    - name: Deploy
+      run: |
+         gcloud run deploy app \
+          --region europe-west1 \
+          --image europe-west1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/copains-de-route-repo/app:app \
+          --platform managed \
+          --allow-unauthenticated \
+          --project ${{ secrets.PROJECT_ID }}
