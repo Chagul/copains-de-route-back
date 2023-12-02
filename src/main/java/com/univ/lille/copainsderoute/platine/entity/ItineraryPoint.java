@@ -9,7 +9,7 @@ import lombok.Data;
 @Entity
 @Data
 
-public class Itinerary {
+public class ItineraryPoint {
 
     
 

@@ -1,6 +1,7 @@
 package com.univ.lille.copainsderoute.platine.dtos;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import com.univ.lille.copainsderoute.platine.enums.BikeType;
 import com.univ.lille.copainsderoute.platine.enums.RoadType;
@@ -20,7 +21,9 @@ public class EventRequestDTOs {
 
   private int maxParticipants;
 
-  private LocalDateTime startTime;
+  private LocalDate startDate;
+
+  private LocalTime startTime;
 
   private RoadType roadType1;
 

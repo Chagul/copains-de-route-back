@@ -6,17 +6,20 @@ import com.univ.lille.copainsderoute.platine.repository.UserRepository;
 import lombok.AllArgsConstructor;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import com.univ.lille.copainsderoute.platine.dtos.EventRequestDTOs;
 import com.univ.lille.copainsderoute.platine.dtos.GpsCoordinatesDTOs;
 import com.univ.lille.copainsderoute.platine.entity.Event;
-import com.univ.lille.copainsderoute.platine.entity.Itinerary;
+import com.univ.lille.copainsderoute.platine.entity.ItineraryPoint;
 import com.univ.lille.copainsderoute.platine.entity.User;
 
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -36,7 +39,7 @@ public class EventService {
      * @return
      */
     public List<Event> getEvents() {
-        return eventRepository.findAll();
+        return eventRepository.findByStartDateGreaterThanEqual(LocalDate.now());
     }
 
     /**
@@ -55,7 +58,8 @@ public class EventService {
         evt.setDescription(eventRequestDTO.getDescription());
         evt.setVisibility(eventRequestDTO.getVisibility());
         evt.setMaxParticipants (eventRequestDTO.getMaxParticipants());
-        evt.setStartTime (eventRequestDTO.getStartTime());
+        evt.setStartDate(eventRequestDTO.getStartDate());
+        evt.setStartTime(eventRequestDTO.getStartTime());
         evt.setRoadType1 (eventRequestDTO.getRoadType1());
         evt.setRoadType2(eventRequestDTO.getRoadType2());
         evt.setRoadType3 (eventRequestDTO.getRoadType3());
@@ -93,6 +97,10 @@ public class EventService {
 
             if (eventRequestDTO.getMaxParticipants() != 0) {
                 evt.setMaxParticipants(eventRequestDTO.getMaxParticipants());
+            }
+
+            if (eventRequestDTO.getStartDate() != null) {
+                evt.setStartDate(eventRequestDTO.getStartDate());
             }
 
             if (eventRequestDTO.getStartTime() != null) {
@@ -147,25 +155,21 @@ public class EventService {
 
         public List<Event> getEventsByLocation(GpsCoordinatesDTOs gpsCoordinatesDTOs) {
 
-            List<Event> events = eventRepository.findAll();
-            List<Event> eventsByLocation = new ArrayList<Event>();
+            List<Event> events = eventRepository.findByStartDate(LocalDate.now());
+            List<Event> eventsByLocation = new ArrayList<>();
 
             for (Event event : events) {
 
-                List<Itinerary> itineraries = eventRepository.findById(event.getId()).get().getItineraryPoints();
-                Collections.sort(itineraries, Comparator.comparingInt(Itinerary::getRank));
-                Itinerary itinerary = itineraries.get(0);
+                List<ItineraryPoint> itineraries = eventRepository.findById(event.getId()).get().getItineraryPoints();
+                Collections.sort(itineraries, Comparator.comparingInt(ItineraryPoint::getRank));
+                ItineraryPoint point = itineraries.get(0);
 
-                boolean isInside = this.isInside(gpsCoordinatesDTOs, itinerary.getLatitude(), itinerary.getLongitude());
+                boolean isInside = this.isInside(gpsCoordinatesDTOs, point.getLatitude(), point.getLongitude());
                 if (isInside) {
                     eventsByLocation.add(event);
-                        }
-                    
-           }
-                return eventsByLocation;
-
-            
-        
+                }
+            }
+                return eventsByLocation;      
         }
 
         public boolean isInside(GpsCoordinatesDTOs gpsCoordinatesDTOs, Double latitude, Double longitude) {

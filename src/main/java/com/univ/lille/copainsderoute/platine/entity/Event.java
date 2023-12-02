@@ -4,7 +4,6 @@ import com.univ.lille.copainsderoute.platine.enums.BikeType;
 import com.univ.lille.copainsderoute.platine.enums.RoadType;
 import com.univ.lille.copainsderoute.platine.enums.Visibility;
 
-import ch.qos.logback.core.joran.sanity.Pair;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,7 +15,8 @@ import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,13 +40,16 @@ public class Event {
 
     @Column(name = "itinerary_points")
     @OneToMany
-    private List<Itinerary> itineraryPoints = new ArrayList<>(); 
+    private List<ItineraryPoint> itineraryPoints = new ArrayList<>(); 
 
     @Column(name = "max_participants")
     private int maxParticipants;
 
+    @Column(name = "start_day")
+    private LocalDate startDate;
+
     @Column(name = "start_time")
-    private LocalDateTime startTime;
+    private LocalTime startTime;
 
     @Column(name = "road_type1")
     private RoadType roadType1;
@@ -69,6 +72,7 @@ public class Event {
     @Column(name = "end_point")
     private String endPoint;
 
+    private int distance;
 
 
     

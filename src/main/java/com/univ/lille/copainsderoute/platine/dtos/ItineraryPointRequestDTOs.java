@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class ItineraryRequestDTOs {
+public class ItineraryPointRequestDTOs {
     
     private int rank;
     
