@@ -40,8 +40,8 @@ public class CommentService {
         comment.setEventId(commentRequestDTOs.getEvent());
         comment.setUserWhoCommented(commentRequestDTOs.getUserWhoCommented());
 
-        List<String> comments = event.getComments();
-        comments.add(comment.getContent());
+        List<Comment> comments = event.getComments();
+        comments.add(comment);
         event.setComments(comments);
 
         return commentRepository.save(comment);

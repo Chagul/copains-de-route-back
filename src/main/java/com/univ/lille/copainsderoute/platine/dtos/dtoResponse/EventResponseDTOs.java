@@ -37,8 +37,8 @@ public class EventResponseDTOs {
     private String startPoint;
     private String endPoint;
 
-    private List<String> comments = new ArrayList<>();
-    private List<String> participants = new ArrayList<>();
+    private List<Comment> comments = new ArrayList<>();
+    private List<User> participants = new ArrayList<>();
 
     private int distance;
     public EventResponseDTOs(Event event) {
@@ -56,13 +56,8 @@ public class EventResponseDTOs {
         this.bikeType2 = event.getBikeType2();
         this.startPoint = event.getStartPoint().toString();
         this.endPoint = event.getEndPoint().toString();
-        for (String comment : event.getComments()) {
-            this.comments.add(comment);
-        }
-
-        for (User participant : event.getParticipants()) {
-            this.participants.add(participant.getLogin());
-        }
+        this.comments = event.getComments();
+        this.participants = event.getParticipants();
         this.distance = event.getDistance();
     }
 

@@ -12,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -21,9 +20,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.hibernate.annotations.ManyToAny;
-
 
 
 @Entity
@@ -51,7 +47,8 @@ public class Event {
     private List<User> participants = new ArrayList<>();
 
     @Column(name="comments")
-    private List<String> comments = new ArrayList<>();
+    @ManyToMany
+    private List<Comment> comments = new ArrayList<>();
 
     @Column(name = "max_participants")
     private int maxParticipants;

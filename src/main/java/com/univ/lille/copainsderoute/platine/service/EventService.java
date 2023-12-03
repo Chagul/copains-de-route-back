@@ -82,7 +82,6 @@ public class EventService {
         
 
         eventRepository.save(evt);
-        System.out.println(evt);
         return evt.getName();
     
     }
@@ -159,7 +158,7 @@ public class EventService {
 
         public EventResponseDTOs getEvent(int id) throws RuntimeException {
             Optional<Event> evt = eventRepository.findById(id);
-            if (evt == null) {
+            if (!evt.isPresent()) {
                 throw new RuntimeException("Event not found");
             }
             EventResponseDTOs eventResponseDTOs = new EventResponseDTOs(evt.get());
@@ -170,7 +169,10 @@ public class EventService {
 
             List<Event> events = eventRepository.findByStartDate(LocalDate.now());
             List<Event> eventsByLocation = new ArrayList<>();
-
+            
+            if (events.isEmpty()) {
+                throw new RuntimeException("No event today");
+            }
             for (Event event : events) {
 
                 List<ItineraryPoint> itineraries = eventRepository.findById(event.getId()).get().getItineraryPoints();
