@@ -26,7 +26,7 @@ public class UserService {
         List<User> users = userRepository.findAll();
         List<UserResponseDTOs> userResponseDTOs = new ArrayList<>();
         for (User user : users) {
-            UserResponseDTOs userResponseDTO = new UserResponseDTOs(user.getLogin());
+            UserResponseDTOs userResponseDTO = new UserResponseDTOs(user.getLogin(), user.getEmail(), user.getNumberEventsParticipated(), user.getNumberEventsCreated(), user.getDistanceTraveled(), user.getCo2_not_emitted());
             userResponseDTOs.add(userResponseDTO);
             }
         return userResponseDTOs;
@@ -42,7 +42,7 @@ public class UserService {
 
         userRepository.save(user);
 
-        UserResponseDTOs userResponseDTO = new UserResponseDTOs(user.getLogin());
+        UserResponseDTOs userResponseDTO = new UserResponseDTOs(user.getLogin(), user.getEmail(), user.getNumberEventsParticipated(), user.getNumberEventsCreated(), user.getDistanceTraveled(), user.getCo2_not_emitted());
 
         return userResponseDTO;
     }
@@ -52,7 +52,7 @@ public class UserService {
         if (user == null) {
             throw new RuntimeException("User not found");
         }
-        UserResponseDTOs userResponseDTO = new UserResponseDTOs(user.getLogin());
+        UserResponseDTOs userResponseDTO = new UserResponseDTOs(user.getLogin(),user.getEmail(),user.getNumberEventsParticipated(), user.getNumberEventsCreated(), user.getDistanceTraveled(), user.getCo2_not_emitted());
         return userResponseDTO;
     }
 

@@ -12,7 +12,7 @@ import java.util.Set;
 public class UserRequestDTOs {
 
     public int id;
-
+    
     private String login;
 
     private String email;
