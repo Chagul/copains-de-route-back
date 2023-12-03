@@ -79,4 +79,22 @@ public class EventController {
         eventService.participate(id, userLogin);
         return ResponseEntity.ok("User added to the event");    
     }
+
+    @GetMapping("createdEvents/{login}")
+    public ResponseEntity<List<EventResponseDTOs>> getUsersByEvent(@PathVariable("login") String login) throws RuntimeException{
+        List<EventResponseDTOs> events = eventService.getEventsByUser(login);
+        if (events.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("participatedEvents/{login}")
+    public ResponseEntity<List<EventResponseDTOs>> getParticipatedEvents(@PathVariable("login") String login) throws RuntimeException{
+        List<EventResponseDTOs> events = eventService.getEventsByUserParticipated(login);
+        if (events.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(events);
+    }
 }

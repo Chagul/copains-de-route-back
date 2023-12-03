@@ -1,6 +1,7 @@
 package com.univ.lille.copainsderoute.platine.repository;
 
 import com.univ.lille.copainsderoute.platine.entity.Event;
+import com.univ.lille.copainsderoute.platine.entity.User;
 
 import java.time.LocalDate;
 
@@ -15,5 +16,9 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 
     // find events of today or 
     public List<Event> findByStartDate(LocalDate date);
+
+    public List<Event> findByPromoter(User promoter);
+
+    public List<Event> findByParticipants(User participant);
 
 }

@@ -9,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
@@ -19,6 +21,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.hibernate.annotations.ManyToAny;
 
 
 
@@ -35,7 +39,7 @@ public class Event {
     private Visibility visibility;
 
     @PrimaryKeyJoinColumn(name = "promoter_id")
-    @OneToOne
+    @ManyToOne
     private User promoter;
 
     @Column(name = "itinerary_points")
@@ -43,7 +47,7 @@ public class Event {
     private List<ItineraryPoint> itineraryPoints = new ArrayList<>(); 
 
     @Column(name ="participants")
-    @OneToMany
+    @ManyToMany
     private List<User> participants = new ArrayList<>();
 
     @Column(name="comments")

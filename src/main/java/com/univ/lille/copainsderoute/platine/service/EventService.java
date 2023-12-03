@@ -55,7 +55,8 @@ public class EventService {
      */
     public String createEvent(EventRequestDTOs eventRequestDTO) throws RuntimeException{
 
-        User promoter = userRepository.findById(eventRequestDTO.getPromoter()).get();
+        User promoter = userRepository.findByLogin(eventRequestDTO.getPromoter());
+        System.out.println(promoter);
         if (promoter == null) {
             throw new RuntimeException ("Promoter not found");
         }
@@ -81,7 +82,7 @@ public class EventService {
         
 
         eventRepository.save(evt);
-
+        System.out.println(evt);
         return evt.getName();
     
     }
@@ -207,6 +208,7 @@ public class EventService {
 
         public void participate(int id, String userLogin) throws RuntimeException {
             Event event = eventRepository.findById(id).get();
+            System.out.println(event);
             if (event == null) {
                 throw new RuntimeException("Event not found");
             }
@@ -220,5 +222,33 @@ public class EventService {
             eventRepository.save(event);
         }
 
+        public List<EventResponseDTOs> getEventsByUser(String login) throws RuntimeException {
+            User user = userRepository.findByLogin(login);
+            if (user == null) {
+                throw new RuntimeException("User not found");
+            }
+            List<Event> events = eventRepository.findByPromoter(user);
+            List<EventResponseDTOs> eventResponseDTOs = new ArrayList<>();
+            for (Event event : events) {
+                eventResponseDTOs.add(new EventResponseDTOs(event));
+            }
+            return eventResponseDTOs;
+        }
 
+        public List<EventResponseDTOs> getEventsByUserParticipated(String login) throws RuntimeException {
+            User user = userRepository.findByLogin(login);
+            if (user == null) {
+                throw new RuntimeException("User not found");
+            }
+
+            if (user.getNumberEventsParticipated() == 0) {
+                throw new RuntimeException("User has not participated to any event");
+            }
+            List<Event> events = eventRepository.findByParticipants(user);
+            List<EventResponseDTOs> eventResponseDTOs = new ArrayList<>();
+            for (Event event : events) {
+                eventResponseDTOs.add(new EventResponseDTOs(event));
+            }
+            return eventResponseDTOs;
+        }
 }

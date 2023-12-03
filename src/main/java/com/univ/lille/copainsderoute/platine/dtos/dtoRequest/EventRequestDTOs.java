@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EventRequestDTOs {
     
-  private int promoter;
+  private String promoter;
 
   private int maxParticipants;
 
