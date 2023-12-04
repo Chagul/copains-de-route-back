@@ -4,10 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
+
+import org.locationtech.jts.awt.PointShapeFactory.Point;
+
 import java.util.ArrayList;
 
 import com.univ.lille.copainsderoute.platine.entity.Comment;
 import com.univ.lille.copainsderoute.platine.entity.Event;
+import com.univ.lille.copainsderoute.platine.entity.PointLatLng;
 import com.univ.lille.copainsderoute.platine.entity.User;
 import com.univ.lille.copainsderoute.platine.enums.BikeType;
 import com.univ.lille.copainsderoute.platine.enums.RoadType;
@@ -34,15 +38,20 @@ public class EventResponseDTOs {
     private BikeType bikeType1;
     private BikeType bikeType2;
 
-    private String startPoint;
-    private String endPoint;
+    private String route;
 
-    private List<Comment> comments = new ArrayList<>();
-    private List<User> participants = new ArrayList<>();
+
+    private List<CommentResponseDTOs> comments = new ArrayList<>();
+    private List<UserResponseDTOs> participants = new ArrayList<>();
+    private List<PointResponseDTOs> steps = new ArrayList<>();
 
     private int distance;
+
+
+
     public EventResponseDTOs(Event event) {
         this.name = event.getName();
+
         this.description = event.getDescription();
         this.promoter = event.getPromoter().getLogin();
         this.maxParticipants = event.getMaxParticipants();
@@ -54,11 +63,24 @@ public class EventResponseDTOs {
         this.roadType3 = event.getRoadType3();
         this.bikeType1 = event.getBikeType1();
         this.bikeType2 = event.getBikeType2();
-        this.startPoint = event.getStartPoint().toString();
-        this.endPoint = event.getEndPoint().toString();
-        this.comments = event.getComments();
-        this.participants = event.getParticipants();
+        
+        for (PointLatLng point : event.getSteps()){
+            PointResponseDTOs pointResponseDTOs = new PointResponseDTOs(point);
+            this.steps.add(pointResponseDTOs);
+        }
+        
+        for (User user : event.getParticipants()){
+            UserResponseDTOs userResponseDTOs = new UserResponseDTOs(user);
+            this.participants.add(userResponseDTOs);
+        }
+        
+        for (Comment comment : event.getComments()){
+            CommentResponseDTOs commentResponseDTOs = new CommentResponseDTOs(comment);
+            this.comments.add(commentResponseDTOs);
+        }
+
         this.distance = event.getDistance();
+        this.route = event.getRoute();
     }
 
     

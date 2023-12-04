@@ -2,7 +2,9 @@ package com.univ.lille.copainsderoute.platine.dtos.dtoRequest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
+import com.univ.lille.copainsderoute.platine.entity.PointLatLng;
 import com.univ.lille.copainsderoute.platine.enums.BikeType;
 import com.univ.lille.copainsderoute.platine.enums.RoadType;
 import com.univ.lille.copainsderoute.platine.enums.Visibility;
@@ -31,10 +33,6 @@ public class EventRequestDTOs {
 
   private RoadType roadType3;
 
-  private String startPoint;
-
-  private String endPoint;
-
   private String name;
 
   private String description;
@@ -46,5 +44,9 @@ public class EventRequestDTOs {
   private Visibility visibility;
 
   private int distance;
+
+  private List<PointLatLng> steps;
+
+  private String route;
 
 }

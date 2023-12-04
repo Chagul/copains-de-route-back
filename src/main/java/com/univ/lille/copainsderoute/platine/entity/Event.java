@@ -1,15 +1,17 @@
 package com.univ.lille.copainsderoute.platine.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.univ.lille.copainsderoute.platine.enums.BikeType;
 import com.univ.lille.copainsderoute.platine.enums.RoadType;
 import com.univ.lille.copainsderoute.platine.enums.Visibility;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrimaryKeyJoinColumn;
@@ -20,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+
 
 
 @Entity
@@ -34,20 +37,22 @@ public class Event {
     private String description;
     private Visibility visibility;
 
+    
+
     @PrimaryKeyJoinColumn(name = "promoter_id")
     @ManyToOne
     private User promoter;
 
-    @Column(name = "itinerary_points")
-    @OneToMany
-    private List<ItineraryPoint> itineraryPoints = new ArrayList<>(); 
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<PointLatLng> steps = new ArrayList<>();
+    
 
-    @Column(name ="participants")
-    @ManyToMany
+    @OneToMany (mappedBy = "participatedEvent", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<User> participants = new ArrayList<>();
 
-    @Column(name="comments")
-    @ManyToMany
+    @OneToMany (mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Comment> comments = new ArrayList<>();
 
     @Column(name = "max_participants")
@@ -74,16 +79,9 @@ public class Event {
     @Column(name = "bike_type2")
     private BikeType bikeType2;
 
-    @Column(name = "start_point")
-    private String startPoint;
-
-    @Column(name = "end_point")
-    private String endPoint;
-
     private int distance;
 
-
-    
+    private String route;   
 
 }
 

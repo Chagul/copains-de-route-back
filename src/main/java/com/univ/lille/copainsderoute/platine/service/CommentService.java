@@ -1,5 +1,6 @@
 package com.univ.lille.copainsderoute.platine.service;
 import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.CommentRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.CommentResponseDTOs;
 import com.univ.lille.copainsderoute.platine.entity.Comment;
 import com.univ.lille.copainsderoute.platine.entity.Event;
 import com.univ.lille.copainsderoute.platine.entity.User;
@@ -24,7 +25,9 @@ public class CommentService {
 
     private EventRepository eventRepository;
 
-    public Comment createComment(CommentRequestDTOs commentRequestDTOs) throws RuntimeException {
+    public CommentResponseDTOs createComment(CommentRequestDTOs commentRequestDTOs) throws RuntimeException {
+
+        
         Comment comment = new Comment();
 
         comment.setSubmissionTime(LocalDateTime.now());
@@ -37,14 +40,20 @@ public class CommentService {
         if (user == null) {
             throw new RuntimeException("User not found");
         }
-        comment.setEventId(commentRequestDTOs.getEvent());
+        comment.setEvent(event);
         comment.setUserWhoCommented(commentRequestDTOs.getUserWhoCommented());
 
         List<Comment> comments = event.getComments();
         comments.add(comment);
-        event.setComments(comments);
 
-        return commentRepository.save(comment);
+        commentRepository.save(comment);
+
+        event.setComments(comments);
+        eventRepository.save(event);
+
+        return new CommentResponseDTOs(comment);
+
+
     }
 
     public List<Comment> getAllCommentsByEvent(int id) {
