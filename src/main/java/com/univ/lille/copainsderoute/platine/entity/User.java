@@ -5,11 +5,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 
 
@@ -43,6 +48,11 @@ public class User {
 
     @OneToMany(mappedBy = "user1")
     private List <Friends> friends = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "participated_event")
+    @JsonIgnore
+    private Event participatedEvent;
 
     // TODO add profile image
 

@@ -11,22 +11,12 @@ import java.util.Set;
 @AllArgsConstructor
 public class UserRequestDTOs {
 
-    public int id;
-    
+
     private String login;
 
     private String email;
 
     private String password;
 
-    private int numberEventsParticipated;
-
-    private int numberEventsCreated;
-
-    private int distanceTraveled;
-
-    private int co2_not_emitted;
-
-    private Set<Friends> friends;
     
 }

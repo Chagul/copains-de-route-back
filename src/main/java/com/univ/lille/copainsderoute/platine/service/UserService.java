@@ -26,7 +26,7 @@ public class UserService {
         List<User> users = userRepository.findAll();
         List<UserResponseDTOs> userResponseDTOs = new ArrayList<>();
         for (User user : users) {
-            UserResponseDTOs userResponseDTO = new UserResponseDTOs(user.getLogin(), user.getEmail(), user.getNumberEventsParticipated(), user.getNumberEventsCreated(), user.getDistanceTraveled(), user.getCo2_not_emitted());
+            UserResponseDTOs userResponseDTO = new UserResponseDTOs(user.getLogin(), user.getNumberEventsParticipated(), user.getNumberEventsCreated(), user.getDistanceTraveled(), user.getCo2_not_emitted());
             userResponseDTOs.add(userResponseDTO);
             }
         return userResponseDTOs;
@@ -42,7 +42,7 @@ public class UserService {
 
         userRepository.save(user);
 
-        UserResponseDTOs userResponseDTO = new UserResponseDTOs(user.getLogin(), user.getEmail(), user.getNumberEventsParticipated(), user.getNumberEventsCreated(), user.getDistanceTraveled(), user.getCo2_not_emitted());
+        UserResponseDTOs userResponseDTO = new UserResponseDTOs(user.getLogin(), user.getNumberEventsParticipated(), user.getNumberEventsCreated(), user.getDistanceTraveled(), user.getCo2_not_emitted());
 
         return userResponseDTO;
     }
@@ -52,7 +52,7 @@ public class UserService {
         if (user == null) {
             throw new RuntimeException("User not found");
         }
-        UserResponseDTOs userResponseDTO = new UserResponseDTOs(user.getLogin(),user.getEmail(),user.getNumberEventsParticipated(), user.getNumberEventsCreated(), user.getDistanceTraveled(), user.getCo2_not_emitted());
+        UserResponseDTOs userResponseDTO = new UserResponseDTOs(user.getLogin(),user.getNumberEventsParticipated(), user.getNumberEventsCreated(), user.getDistanceTraveled(), user.getCo2_not_emitted());
         return userResponseDTO;
     }
 
@@ -74,23 +74,7 @@ public class UserService {
         if (userRequestDTO.getPassword() != null) {
             user.get().setPassword(userRequestDTO.getPassword());
         }
-        
-        if (userRequestDTO.getNumberEventsParticipated() != 0) {
-            user.get().setNumberEventsParticipated(userRequestDTO.getNumberEventsParticipated());
-        }
-
-        if (userRequestDTO.getNumberEventsCreated() != 0) {
-            user.get().setNumberEventsCreated(userRequestDTO.getNumberEventsCreated());
-        }
-
-        if (userRequestDTO.getDistanceTraveled() != 0) {
-            user.get().setDistanceTraveled(userRequestDTO.getDistanceTraveled());
-        }
-
-        if (userRequestDTO.getCo2_not_emitted() != 0) {
-            user.get().setCo2_not_emitted(userRequestDTO.getCo2_not_emitted());
-        }
-
+      
         userRepository.save(user.get());
         return user.get();
     }
