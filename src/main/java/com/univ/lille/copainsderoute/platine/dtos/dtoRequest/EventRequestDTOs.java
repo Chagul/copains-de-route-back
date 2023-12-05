@@ -49,4 +49,7 @@ public class EventRequestDTOs {
 
   private String route;
 
+  private String startAddress;
+
+  private String endAddress;
 }

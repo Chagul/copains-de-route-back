@@ -68,8 +68,9 @@ public class EventService {
         evt.setRoadType3(eventRequestDTO.getRoadType3());
         evt.setBikeType1(eventRequestDTO.getBikeType1());
         evt.setBikeType2(eventRequestDTO.getBikeType2());
+        evt.setStartAddress(eventRequestDTO.getStartAddress());
+        evt.setEndAddress(eventRequestDTO.getEndAddress());
         
-        // Set the promoter for the event
         evt.setPromoter(promoter);
         
         evt.setRoute(eventRequestDTO.getRoute());

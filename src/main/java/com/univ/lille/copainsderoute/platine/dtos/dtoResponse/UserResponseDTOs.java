@@ -13,14 +13,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserResponseDTOs {
 
-    public UserResponseDTOs(User user, List<Integer> participatedEvent_id) {
-        this.login = user.getLogin();
-        this.numberEventsParticipated = user.getNumberEventsParticipated();
-        this.numberEventsCreated = user.getNumberEventsCreated();
-        this.distanceTraveled = user.getDistanceTraveled();
-        this.participatedEvent_id = participatedEvent_id;
-    }
-    
+       
     public UserResponseDTOs(User user) {
         this.login = user.getLogin();
         this.numberEventsParticipated = user.getNumberEventsParticipated();
@@ -39,11 +32,6 @@ public class UserResponseDTOs {
     private int distanceTraveled;
 
     private int co2NotEmitted;
-
-    private List<Integer> participatedEvent_id = new ArrayList<>(); 
-
-   
-
 
 //    private List <Friends> friends = new ArrayList<>();
 

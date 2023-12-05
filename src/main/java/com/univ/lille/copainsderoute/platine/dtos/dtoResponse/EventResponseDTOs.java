@@ -41,6 +41,8 @@ public class EventResponseDTOs {
     private BikeType bikeType2;
 
     private String route;
+    private String startAddress;
+    private String endAddress;
 
 
     private List<CommentResponseDTOs> comments = new ArrayList<>();
@@ -66,6 +68,7 @@ public class EventResponseDTOs {
         this.roadType3 = event.getRoadType3();
         this.bikeType1 = event.getBikeType1();
         this.bikeType2 = event.getBikeType2();
+
         
         for (PointLatLng point : event.getSteps()){
             PointResponseDTOs pointResponseDTOs = new PointResponseDTOs(point);
@@ -73,19 +76,8 @@ public class EventResponseDTOs {
         }
         
         for (User user : event.getParticipants()){
-            if (!user.getParticipatedEvent().isEmpty()){
-            List<Integer> participatedEvent_id = new ArrayList<>();
-            for (int i = 0; i < user.getParticipatedEvent().size(); i++) {
-                participatedEvent_id.add(user.getParticipatedEvent().get(i).getId()); 
-            }
-            UserResponseDTOs userResponseDTO = new UserResponseDTOs(user, participatedEvent_id);
-            this.participants.add(userResponseDTO);
-        }
-            else {
             UserResponseDTOs userResponseDTOs = new UserResponseDTOs(user);
             this.participants.add(userResponseDTOs);
-        }
-
     }
         
         for (Comment comment : event.getComments()){
@@ -95,6 +87,8 @@ public class EventResponseDTOs {
 
         this.distance = event.getDistance();
         this.route = event.getRoute();
+        this.startAddress = event.getStartAddress();
+        this.endAddress = event.getEndAddress();
     }
 
     

@@ -26,18 +26,9 @@ public class UserService {
         List<User> users = userRepository.findAll();
         List<UserResponseDTOs> userResponseDTOs = new ArrayList<>();
         for (User user : users) {
-            List<Integer> participatedEvent_id = new ArrayList<>();
-            if (!user.getParticipatedEvent().isEmpty()){
-                for (int i = 0; i < user.getParticipatedEvent().size(); i++) {
-                    participatedEvent_id.add(user.getParticipatedEvent().get(i).getId());
-                }
-            UserResponseDTOs userResponseDTO = new UserResponseDTOs(user, participatedEvent_id);
-            userResponseDTOs.add(userResponseDTO);
-        }
-            else{
-            UserResponseDTOs userResponseDTO = new UserResponseDTOs(user);
-            userResponseDTOs.add(userResponseDTO);
-            }
+           UserResponseDTOs userResponseDTO = new UserResponseDTOs(user);
+           userResponseDTOs.add(userResponseDTO);
+            
         }
         return userResponseDTOs;
     }
@@ -62,15 +53,7 @@ public class UserService {
         if (user == null) {
             throw new RuntimeException("User not found");
         }
-        if (!user.getParticipatedEvent().isEmpty()){
-            List<Integer> participatedEvent_id = new ArrayList<>();
-            for (int i = 0; i < user.getParticipatedEvent().size(); i++) {
-                participatedEvent_id.add(user.getParticipatedEvent().get(i).getId()); 
-            }
-            UserResponseDTOs userResponseDTO = new UserResponseDTOs(user, participatedEvent_id);
-            return userResponseDTO;
-        
-        }
+      
         UserResponseDTOs userResponseDTO = new UserResponseDTOs(user);
         return userResponseDTO;
     }
