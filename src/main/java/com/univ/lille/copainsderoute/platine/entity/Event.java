@@ -89,6 +89,7 @@ public class Event {
 
     private int distance;
 
+    @Column(columnDefinition = "TEXT")
     private String route;   
 
     private String startAddress;

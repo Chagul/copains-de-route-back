@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.univ.lille.copainsderoute.platine.entity.PointLatLng;
 import com.univ.lille.copainsderoute.platine.enums.BikeType;
 import com.univ.lille.copainsderoute.platine.enums.RoadType;
@@ -17,6 +20,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(value = JsonInclude.Include.NON_EMPTY, content = JsonInclude.Include.NON_NULL)
 public class EventRequestDTOs {
     
   private String promoter;
