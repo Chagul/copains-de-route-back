@@ -21,6 +21,8 @@ import com.univ.lille.copainsderoute.platine.enums.Visibility;
 @AllArgsConstructor
 public class EventResponseDTOs {
 
+    private int id;
+
     private String name;
     private String description;
 
@@ -50,6 +52,7 @@ public class EventResponseDTOs {
 
 
     public EventResponseDTOs(Event event) {
+        this.id = event.getId();
         this.name = event.getName();
 
         this.description = event.getDescription();
@@ -70,9 +73,20 @@ public class EventResponseDTOs {
         }
         
         for (User user : event.getParticipants()){
+            if (!user.getParticipatedEvent().isEmpty()){
+            List<Integer> participatedEvent_id = new ArrayList<>();
+            for (int i = 0; i < user.getParticipatedEvent().size(); i++) {
+                participatedEvent_id.add(user.getParticipatedEvent().get(i).getId()); 
+            }
+            UserResponseDTOs userResponseDTO = new UserResponseDTOs(user, participatedEvent_id);
+            this.participants.add(userResponseDTO);
+        }
+            else {
             UserResponseDTOs userResponseDTOs = new UserResponseDTOs(user);
             this.participants.add(userResponseDTOs);
         }
+
+    }
         
         for (Comment comment : event.getComments()){
             CommentResponseDTOs commentResponseDTOs = new CommentResponseDTOs(comment);

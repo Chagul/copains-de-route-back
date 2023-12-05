@@ -26,9 +26,19 @@ public class UserService {
         List<User> users = userRepository.findAll();
         List<UserResponseDTOs> userResponseDTOs = new ArrayList<>();
         for (User user : users) {
-            UserResponseDTOs userResponseDTO = new UserResponseDTOs(user.getLogin(), user.getNumberEventsParticipated(), user.getNumberEventsCreated(), user.getDistanceTraveled(), user.getCo2_not_emitted());
+            List<Integer> participatedEvent_id = new ArrayList<>();
+            if (!user.getParticipatedEvent().isEmpty()){
+                for (int i = 0; i < user.getParticipatedEvent().size(); i++) {
+                    participatedEvent_id.add(user.getParticipatedEvent().get(i).getId());
+                }
+            UserResponseDTOs userResponseDTO = new UserResponseDTOs(user, participatedEvent_id);
+            userResponseDTOs.add(userResponseDTO);
+        }
+            else{
+            UserResponseDTOs userResponseDTO = new UserResponseDTOs(user);
             userResponseDTOs.add(userResponseDTO);
             }
+        }
         return userResponseDTOs;
     }
 
@@ -42,7 +52,7 @@ public class UserService {
 
         userRepository.save(user);
 
-        UserResponseDTOs userResponseDTO = new UserResponseDTOs(user.getLogin(), user.getNumberEventsParticipated(), user.getNumberEventsCreated(), user.getDistanceTraveled(), user.getCo2_not_emitted());
+        UserResponseDTOs userResponseDTO = new UserResponseDTOs(user);
 
         return userResponseDTO;
     }
@@ -52,7 +62,16 @@ public class UserService {
         if (user == null) {
             throw new RuntimeException("User not found");
         }
-        UserResponseDTOs userResponseDTO = new UserResponseDTOs(user.getLogin(),user.getNumberEventsParticipated(), user.getNumberEventsCreated(), user.getDistanceTraveled(), user.getCo2_not_emitted());
+        if (!user.getParticipatedEvent().isEmpty()){
+            List<Integer> participatedEvent_id = new ArrayList<>();
+            for (int i = 0; i < user.getParticipatedEvent().size(); i++) {
+                participatedEvent_id.add(user.getParticipatedEvent().get(i).getId()); 
+            }
+            UserResponseDTOs userResponseDTO = new UserResponseDTOs(user, participatedEvent_id);
+            return userResponseDTO;
+        
+        }
+        UserResponseDTOs userResponseDTO = new UserResponseDTOs(user);
         return userResponseDTO;
     }
 

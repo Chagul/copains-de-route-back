@@ -1,6 +1,7 @@
 package com.univ.lille.copainsderoute.platine.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.univ.lille.copainsderoute.platine.enums.BikeType;
 import com.univ.lille.copainsderoute.platine.enums.RoadType;
 import com.univ.lille.copainsderoute.platine.enums.Visibility;
@@ -12,6 +13,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrimaryKeyJoinColumn;
@@ -47,9 +51,13 @@ public class Event {
     private List<PointLatLng> steps = new ArrayList<>();
     
 
-    @OneToMany (mappedBy = "participatedEvent", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<User> participants = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+        name = "user_event",
+        joinColumns = @JoinColumn(name = "event_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> participants;
 
     @OneToMany (mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
@@ -83,6 +91,15 @@ public class Event {
 
     private String route;   
 
+    private String startAddress;
+
+    private String endAddress;
+
 }
+
+
+
+
+
 
 

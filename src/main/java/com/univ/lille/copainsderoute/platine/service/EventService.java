@@ -22,8 +22,6 @@ import com.univ.lille.copainsderoute.platine.entity.User;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,10 +49,6 @@ public class EventService {
 
     }
 
-    /**
-     * create an event
-     * @return id of the event
-     */
     public String createEvent(EventRequestDTOs eventRequestDTO) throws RuntimeException {
         User promoter = userRepository.findByLogin(eventRequestDTO.getPromoter());
     
@@ -74,36 +68,38 @@ public class EventService {
         evt.setRoadType3(eventRequestDTO.getRoadType3());
         evt.setBikeType1(eventRequestDTO.getBikeType1());
         evt.setBikeType2(eventRequestDTO.getBikeType2());
+        
+        // Set the promoter for the event
         evt.setPromoter(promoter);
+        
         evt.setRoute(eventRequestDTO.getRoute());
         evt.setDistance(eventRequestDTO.getDistance());
     
         eventRepository.save(evt);
     
-        List<PointLatLng> steps = new ArrayList<>();
         for (PointLatLng stepDTO : eventRequestDTO.getSteps()) {
             PointLatLng point = new PointLatLng();
             point.setLatitude(stepDTO.getLatitude());
             point.setLongitude(stepDTO.getLongitude());
             point.setRank(stepDTO.getRank());
-            point.setEvent(evt); // Associez chaque point à l'événement
+            point.setEvent(evt);
             pointLatLngRepository.save(point);
-            steps.add(point);
+            evt.getSteps().add(point);
         }
     
-        evt.setSteps(steps);
-        eventRepository.save(evt);
-    
+        List<Event> events = promoter.getParticipatedEvent();
+        events.add(evt);
+        promoter.setParticipatedEvent(events);
         promoter.setNumberEventsCreated(promoter.getNumberEventsCreated() + 1);
         userRepository.save(promoter);
     
         return evt.getName();
     }
     
-
-
-
-        public Event updateEvent (EventRequestDTOs eventRequestDTO, int id) throws RuntimeException {
+    
+    
+    
+    public Event updateEvent (EventRequestDTOs eventRequestDTO, int id) throws RuntimeException {
 
             Event evt = eventRepository.findById(id).get();
 
@@ -233,14 +229,13 @@ public class EventService {
             eventRepository.save(event);
         
             // Associez l'utilisateur à l'événement
-            user.setParticipatedEvent(event);
+            List<Event> events = user.getParticipatedEvent();
+            events.add(event);
+            user.setParticipatedEvent(events);
             user.setNumberEventsParticipated(user.getNumberEventsParticipated() + 1);
         
             // Mettez à jour l'utilisateur dans la base de données
             userRepository.save(user);
-
-            
-
         }
         
 
