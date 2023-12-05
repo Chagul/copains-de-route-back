@@ -1,4 +1,4 @@
-package com.univ.lille.copainsderoute.platine.dtos;
+package com.univ.lille.copainsderoute.platine.dtos.dtoRequest;
 
 import com.univ.lille.copainsderoute.platine.entity.Friends;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class UserRequestDTOs {
 
-    public int id;
 
     private String login;
 
@@ -19,14 +18,5 @@ public class UserRequestDTOs {
 
     private String password;
 
-    private int numberEventsParticipated;
-
-    private int numberEventsCreated;
-
-    private int distanceTraveled;
-
-    private int co2_not_emitted;
-
-    private Set<Friends> friends;
     
 }

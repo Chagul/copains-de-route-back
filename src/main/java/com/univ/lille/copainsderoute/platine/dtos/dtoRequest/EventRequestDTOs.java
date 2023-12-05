@@ -1,7 +1,10 @@
-package com.univ.lille.copainsderoute.platine.dtos;
+package com.univ.lille.copainsderoute.platine.dtos.dtoRequest;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 
+import com.univ.lille.copainsderoute.platine.entity.PointLatLng;
 import com.univ.lille.copainsderoute.platine.enums.BikeType;
 import com.univ.lille.copainsderoute.platine.enums.RoadType;
 import com.univ.lille.copainsderoute.platine.enums.Visibility;
@@ -16,21 +19,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EventRequestDTOs {
     
-  private int promoter;
+  private String promoter;
 
   private int maxParticipants;
 
-  private LocalDateTime startTime;
+  private LocalDate startDate;
+
+  private LocalTime startTime;
 
   private RoadType roadType1;
 
   private RoadType roadType2;
 
   private RoadType roadType3;
-
-  private String startPoint;
-
-  private String endPoint;
 
   private String name;
 
@@ -42,4 +43,13 @@ public class EventRequestDTOs {
   
   private Visibility visibility;
 
+  private int distance;
+
+  private List<PointLatLng> steps;
+
+  private String route;
+
+  private String startAddress;
+
+  private String endAddress;
 }

@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.univ.lille.copainsderoute.platine.dtos.EventRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.EventRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.GpsCoordinatesDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.EventResponseDTOs;
 import com.univ.lille.copainsderoute.platine.entity.Event;
 import com.univ.lille.copainsderoute.platine.service.EventService;
 
@@ -26,8 +28,8 @@ public class EventController {
     
     private final EventService eventService;
     @GetMapping("")
-    public ResponseEntity<List<Event>> getEvents() throws RuntimeException{
-        List<Event> events = eventService.getEvents();
+    public ResponseEntity<List<EventResponseDTOs>> getEvents() throws RuntimeException{
+        List<EventResponseDTOs> events = eventService.getEvents();
         if (events.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -35,8 +37,8 @@ public class EventController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Event> getEvent(@PathVariable("id") int id) throws RuntimeException{
-        Event event = eventService.getEvent(id);
+    public ResponseEntity<EventResponseDTOs> getEvent(@PathVariable("id") int id) throws RuntimeException{
+        EventResponseDTOs event = eventService.getEvent(id);
         if (event == null) {
             return ResponseEntity.noContent().build();
         }
@@ -44,15 +46,15 @@ public class EventController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Event> createEvent(@RequestBody EventRequestDTOs eventRequestDTO) throws RuntimeException{
-        Event event = eventService.createEvent(eventRequestDTO);
-        return ResponseEntity.created(null).body(event);
+    public ResponseEntity<String> createEvent(@RequestBody EventRequestDTOs eventRequestDTO) throws RuntimeException{
+        String eventName = eventService.createEvent(eventRequestDTO);
+        return ResponseEntity.created(null).body(eventName);
     }
 
     @PatchMapping("{id}")
-    public ResponseEntity<Event> updateEvent(@PathVariable("id") int id, @RequestBody EventRequestDTOs eventRequestDTO) throws RuntimeException{
-        Event event = eventService.updateEvent(eventRequestDTO, id);
-        return ResponseEntity.ok(event);
+    public ResponseEntity<String> updateEvent(@PathVariable("id") int id, @RequestBody EventRequestDTOs eventRequestDTO) throws RuntimeException{
+        eventService.updateEvent(eventRequestDTO, id);
+        return ResponseEntity.ok("Event updated");
     }
 
     @DeleteMapping("{id}")
@@ -61,4 +63,38 @@ public class EventController {
         return ResponseEntity.ok("Event deleted");
     }
     
+
+    @GetMapping("/location")
+    public ResponseEntity<List<Event>> getEventsByLocation(@RequestBody GpsCoordinatesDTOs gpsCoordinatesDTO) throws RuntimeException {
+        
+        List<Event> itinerary = eventService.getEventsByLocation(gpsCoordinatesDTO);
+        if (itinerary == null || itinerary.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(itinerary);
+    }
+
+    @PostMapping("/participate/{id}/{userLogin}")
+    public ResponseEntity<String> participate(@PathVariable("id") int id, @PathVariable("userLogin") String userLogin) throws RuntimeException{
+        eventService.participate(id, userLogin);
+        return ResponseEntity.ok("User added to the event");    
+    }
+
+    @GetMapping("createdEvents/{login}")
+    public ResponseEntity<List<EventResponseDTOs>> getUsersByEvent(@PathVariable("login") String login) throws RuntimeException{
+        List<EventResponseDTOs> events = eventService.getEventsByUser(login);
+        if (events.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("participatedEvents/{login}")
+    public ResponseEntity<List<EventResponseDTOs>> getParticipatedEvents(@PathVariable("login") String login) throws RuntimeException{
+        List<EventResponseDTOs> events = eventService.getEventsByUserParticipated(login);
+        if (events.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(events);
+    }
 }

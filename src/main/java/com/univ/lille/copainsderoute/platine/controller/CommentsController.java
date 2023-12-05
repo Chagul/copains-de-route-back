@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.univ.lille.copainsderoute.platine.dtos.CommentRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.*;
+import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.CommentResponseDTOs;
 import com.univ.lille.copainsderoute.platine.entity.Comment;
 import com.univ.lille.copainsderoute.platine.service.CommentService;
 
@@ -28,8 +29,8 @@ public class CommentsController {
     private CommentService commentService;
 
     @PostMapping("")
-    public ResponseEntity<Comment> createComment (@RequestBody CommentRequestDTOs commentRequestDTOs) throws Exception {
-        Comment createdComment = commentService.createComment(commentRequestDTOs);
+    public ResponseEntity<CommentResponseDTOs> createComment (@RequestBody CommentRequestDTOs commentRequestDTOs) throws Exception {
+        CommentResponseDTOs createdComment = commentService.createComment(commentRequestDTOs);
         return new ResponseEntity<>(createdComment, HttpStatus.CREATED);
 
     }

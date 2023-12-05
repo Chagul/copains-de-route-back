@@ -3,6 +3,7 @@ package com.univ.lille.copainsderoute.platine.entity;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,12 +26,12 @@ public class Comment {
     private String content;
     private LocalDateTime submissionTime;
 
-    @ManyToOne
-    @JoinColumn(name = "user_who_commented" )
-    private User userWhoCommented;
+    private String userWhoCommented;
 
     @ManyToOne
-    @JoinColumn(name = "event" )
+    @JoinColumn(name = "event_id")
+    @JsonIgnore
+    
     private Event event;
     private int likes;
 

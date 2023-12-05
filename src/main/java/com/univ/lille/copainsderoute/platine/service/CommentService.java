@@ -1,5 +1,6 @@
 package com.univ.lille.copainsderoute.platine.service;
-import com.univ.lille.copainsderoute.platine.dtos.CommentRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.CommentRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.CommentResponseDTOs;
 import com.univ.lille.copainsderoute.platine.entity.Comment;
 import com.univ.lille.copainsderoute.platine.entity.Event;
 import com.univ.lille.copainsderoute.platine.entity.User;
@@ -24,36 +25,50 @@ public class CommentService {
 
     private EventRepository eventRepository;
 
-    public Comment createComment(CommentRequestDTOs commentRequestDTOs) throws RuntimeException {
+    public CommentResponseDTOs createComment(CommentRequestDTOs commentRequestDTOs) throws RuntimeException {
+
+        
         Comment comment = new Comment();
 
         comment.setSubmissionTime(LocalDateTime.now());
         comment.setContent(commentRequestDTOs.getContent());
-        comment.setLikes(commentRequestDTOs.getLikes());
+        comment.setLikes(0);
 
         Event event = eventRepository.findById(commentRequestDTOs.getEvent()).orElseThrow(() -> new RuntimeException("Event not found"));
-        User user = userRepository.findById(commentRequestDTOs.getUserWhoCommented()).orElseThrow(() -> new RuntimeException("User not found"));
-        if (event == null) {
-            throw new RuntimeException("Event not found");
-        }
+        User user = userRepository.findByLogin(commentRequestDTOs.getUserWhoCommented());
+
         if (user == null) {
             throw new RuntimeException("User not found");
         }
         comment.setEvent(event);
-        comment.setUserWhoCommented(user);
-        return commentRepository.save(comment);
+        comment.setUserWhoCommented(commentRequestDTOs.getUserWhoCommented());
+
+        List<Comment> comments = event.getComments();
+        comments.add(comment);
+
+        commentRepository.save(comment);
+
+        event.setComments(comments);
+        eventRepository.save(event);
+
+        return new CommentResponseDTOs(comment);
+
+
     }
 
     public List<Comment> getAllCommentsByEvent(int id) {
-        List<Comment> comments = commentRepository.findAllByEvent_Id(id);
+        List<Comment> comments = commentRepository.findAllByEventId(id);
         return comments;
     }
 
     public Comment updateComment(CommentRequestDTOs commentRequestDTOs, int id) throws RuntimeException {
         Comment comment = commentRepository.findById(id).orElseThrow(() -> new RuntimeException("Comment not found"));
-
-        comment.setContent(commentRequestDTOs.getContent());
-        comment.setLikes(commentRequestDTOs.getLikes());
+        if (commentRequestDTOs.getContent() != null){
+            comment.setContent(commentRequestDTOs.getContent());
+        }
+        if (commentRequestDTOs.getLikes() != 0) {
+            comment.setLikes(comment.getLikes()+1);
+        }
 
         return commentRepository.save(comment);
     }

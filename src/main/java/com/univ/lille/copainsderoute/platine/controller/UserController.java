@@ -1,7 +1,7 @@
 package com.univ.lille.copainsderoute.platine.controller;
 
-import com.univ.lille.copainsderoute.platine.dtos.UserRequestDTOs;
-import com.univ.lille.copainsderoute.platine.entity.User;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.UserRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.UserResponseDTOs;
 import com.univ.lille.copainsderoute.platine.service.UserService;
 
 import org.springframework.http.HttpStatus;
@@ -26,8 +26,8 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("")
-    public ResponseEntity<List<User>> getUsers() throws RuntimeException{
-        List<User> users = userService.getUsers();
+    public ResponseEntity<List<UserResponseDTOs>> getUsers() throws RuntimeException{
+        List<UserResponseDTOs> users = userService.getUsers();
         if (users.isEmpty()) {
             return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
@@ -35,24 +35,21 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<User> getUser(@PathVariable("id") int id) throws RuntimeException{
-        User user = userService.getUser(id);
-        if (user == null) {
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        }
+    public ResponseEntity<UserResponseDTOs> getUser(@PathVariable("id") int id) throws RuntimeException{
+        UserResponseDTOs user = userService.getUser(id);
         return ResponseEntity.ok(user);
     }
 
     @PostMapping("")
-    public ResponseEntity<String> createUser(@RequestBody UserRequestDTOs userRequestDTOs){
-        User createdUser = userService.createUser(userRequestDTOs);
-        return ResponseEntity.created(null).body(createdUser.getLogin());
+    public ResponseEntity<UserResponseDTOs> createUser(@RequestBody UserRequestDTOs userRequestDTOs){
+        UserResponseDTOs createdUser = userService.createUser(userRequestDTOs);
+        return ResponseEntity.created(null).body(createdUser);
     }
 
     @PatchMapping("{user_id}")
-    public ResponseEntity<User> updateUser(@PathVariable("user_id") int id, @RequestBody UserRequestDTOs userRequestDTOs) throws RuntimeException{
-        User updatedUser = userService.updateUser(userRequestDTOs, id);
-        return ResponseEntity.ok(updatedUser);
+    public ResponseEntity<String> updateUser(@PathVariable("user_id") int id, @RequestBody UserRequestDTOs userRequestDTOs) throws RuntimeException{
+        userService.updateUser(userRequestDTOs, id);
+        return ResponseEntity.ok("User updated");
     }
 
     @DeleteMapping("{id}")
@@ -61,6 +58,4 @@ public class UserController {
         return ResponseEntity.ok("User deleted");
     }
 
-
-    
 }
