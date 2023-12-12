@@ -6,7 +6,8 @@ import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.UserResponseDTOs;
 import com.univ.lille.copainsderoute.platine.entity.User;
 
 
-
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ import java.util.Optional;
 public class UserService {
 
     private UserRepository userRepository;
-
+    private PasswordEncoder passwordEncoder;
 
     public List<UserResponseDTOs> getUsers() {
         List<User> users = userRepository.findAll();
@@ -33,19 +34,15 @@ public class UserService {
         return userResponseDTOs;
     }
 
-    public UserResponseDTOs createUser(UserRequestDTOs userRequestDTO) {
+    public User createUser(UserRegisterRequestDTOs userRequestDTO) {
     
         User user = new User();
 
         user.setLogin(userRequestDTO.getLogin());
         user.setEmail(userRequestDTO.getEmail());
-        user.setPassword(userRequestDTO.getPassword());
+        user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
 
-        userRepository.save(user);
-
-        UserResponseDTOs userResponseDTO = new UserResponseDTOs(user);
-
-        return userResponseDTO;
+       return userRepository.save(user);
     }
 
     public UserResponseDTOs getUser(int id) throws RuntimeException{
@@ -58,7 +55,7 @@ public class UserService {
         return userResponseDTO;
     }
 
-    public User updateUser(UserRequestDTOs userRequestDTO, int id) throws RuntimeException{
+    public User updateUser(UserRegisterRequestDTOs userRequestDTO, int id) throws RuntimeException{
         
         Optional<User> user = userRepository.findById(id);
         if (!user.isPresent()) {
