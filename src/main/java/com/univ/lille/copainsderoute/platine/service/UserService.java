@@ -45,14 +45,12 @@ public class UserService {
        return userRepository.save(user);
     }
 
-    public UserResponseDTOs getUser(int id) throws RuntimeException{
-        User user = userRepository.findById(id).get();
+    public UserResponseDTOs getUserByLogin(String login) throws RuntimeException{
+        User user = userRepository.findByLogin(login);
         if (user == null) {
             throw new RuntimeException("User not found");
         }
-      
-        UserResponseDTOs userResponseDTO = new UserResponseDTOs(user);
-        return userResponseDTO;
+        return new UserResponseDTOs(user);
     }
 
     public User updateUser(UserRegisterRequestDTOs userRequestDTO, int id) throws RuntimeException{

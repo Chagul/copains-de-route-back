@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 public class JwtUtil {
-    private final String secret_key = "mysecretkey";
-    private long accessTokenValidity = 60*60*1000;
+    private final String secret_key = "MZltB4MJNhMgtEfaERCONoEoHvzJTgs6ONYxJKCSKAfH5UyCD2jyP3STpPn2bZCk";
+    private long accessTokenValidity = 7;
 
     private final JwtParser jwtParser;
 
@@ -25,10 +25,10 @@ public class JwtUtil {
     }
 
     public String createToken(User user) {
-        Claims claims = Jwts.claims().setSubject(user.getEmail());
+        Claims claims = Jwts.claims().setSubject(user.getLogin());
         claims.put("login",user.getLogin());
         Date tokenCreateTime = new Date();
-        Date tokenValidity = new Date(tokenCreateTime.getTime() + TimeUnit.MINUTES.toMillis(accessTokenValidity));
+        Date tokenValidity = new Date(tokenCreateTime.getTime() + TimeUnit.DAYS.toMillis(accessTokenValidity));
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(tokenValidity)
@@ -73,7 +73,8 @@ public class JwtUtil {
         }
     }
 
-    public String getEmail(Claims claims) {
+    public String getLogin(HttpServletRequest request) {
+        Claims claims = resolveClaims(request);
         return claims.getSubject();
     }
 
