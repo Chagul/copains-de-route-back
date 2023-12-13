@@ -33,12 +33,12 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO request)  {
         try {
             Authentication authentication =
-                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-            String email = authentication.getName();
+                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getLogin(), request.getPassword()));
+            String login = authentication.getName();
             User user = new User();
-            user.setEmail(email);
+            user.setLogin(login);
             String token = jwtUtil.createToken(user);
-            LoginResponseDTO loginRes = new LoginResponseDTO(email, token);
+            LoginResponseDTO loginRes = new LoginResponseDTO(token);
 
             return ResponseEntity.ok(loginRes);
 
