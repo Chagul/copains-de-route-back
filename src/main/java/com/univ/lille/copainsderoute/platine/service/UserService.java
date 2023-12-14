@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,30 +54,22 @@ public class UserService {
         return new UserResponseDTOs(user);
     }
 
-    public User updateUser(UserRegisterRequestDTOs userRequestDTO, int id) throws RuntimeException{
+    public User updateUser(String loginChange, String userLogin) throws RuntimeException{
         
-        Optional<User> user = userRepository.findById(id);
-        if (!user.isPresent()) {
+        User user = userRepository.findByLogin(userLogin);
+        if (user == null) {
             throw new RuntimeException("User not found");
         }
 
-        if (userRequestDTO.getLogin() != null) {
-            user.get().setLogin(userRequestDTO.getLogin());
+        if (StringUtils.hasText(loginChange)) {
+            user.setLogin(loginChange);
         }
 
-        if (userRequestDTO.getEmail() != null) {
-            user.get().setEmail(userRequestDTO.getEmail());
-        }
-         
-        if (userRequestDTO.getPassword() != null) {
-            user.get().setPassword(userRequestDTO.getPassword());
-        }
-      
-        userRepository.save(user.get());
-        return user.get();
+        user = userRepository.save(user);
+        return user;
     }
 
-    public void deleteUser(int id) {
-        userRepository.deleteById(id);
+    public void deleteUser(String login) {
+        userRepository.deleteByLogin(login);
     }
 }
