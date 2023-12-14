@@ -23,8 +23,6 @@ import lombok.NoArgsConstructor;
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY, content = JsonInclude.Include.NON_NULL)
 public class EventRequestDTOs {
     
-  private String promoter;
-
   private int maxParticipants;
 
   private LocalDate startDate;

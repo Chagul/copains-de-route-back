@@ -53,7 +53,7 @@ public class AuthController {
     public ResponseEntity<?> createUser(@RequestBody UserRegisterRequestDTOs userRegisterRequestDTOs){
         User createdUser = userService.createUser(userRegisterRequestDTOs);
         if(createdUser != null)
-            return ResponseEntity.created(URI.create("/users/" + createdUser.getId())).build();
+            return ResponseEntity.created(URI.create("/users/me")).build();
         return ResponseEntity.internalServerError().build();
     }
 }
