@@ -3,10 +3,12 @@ package com.univ.lille.copainsderoute.platine.controller;
 import com.univ.lille.copainsderoute.platine.authent.JwtUtil;
 import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.UserRegisterRequestDTOs;
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.UserResponseDTOs;
+import com.univ.lille.copainsderoute.platine.entity.User;
 import com.univ.lille.copainsderoute.platine.service.UserService;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.websocket.server.PathParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
@@ -44,16 +47,16 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PatchMapping("{user_id}")
-    public ResponseEntity<String> updateUser(@PathVariable("user_id") int id, @RequestBody UserRegisterRequestDTOs userRegisterRequestDTOs) throws RuntimeException{
-        userService.updateUser(userRegisterRequestDTOs, id);
-        return ResponseEntity.ok("User updated");
+    @PatchMapping("me")
+    public ResponseEntity<UserResponseDTOs> updateUser(HttpServletRequest request, @RequestParam("login") String userLogin) throws RuntimeException{
+        User user = userService.updateUser(userLogin, jwtUtil.getLogin(request));
+        return ResponseEntity.ok(new UserResponseDTOs(user));
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable("id") int id) throws RuntimeException{
-        userService.deleteUser(id);
-        return ResponseEntity.ok("User deleted");
+    @DeleteMapping("me")
+    public ResponseEntity<?> deleteUser(HttpServletRequest request) throws RuntimeException{
+        userService.deleteUser(jwtUtil.getLogin(request));
+        return ResponseEntity.ok(null);
     }
 
 }
