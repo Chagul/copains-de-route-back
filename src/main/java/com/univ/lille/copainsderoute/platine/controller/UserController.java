@@ -2,6 +2,8 @@ package com.univ.lille.copainsderoute.platine.controller;
 
 import com.univ.lille.copainsderoute.platine.authent.JwtUtil;
 import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.UserRegisterRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.ChangeLoginUserResponseDTO;
+import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.LoginResponseDTO;
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.UserResponseDTOs;
 import com.univ.lille.copainsderoute.platine.entity.User;
 import com.univ.lille.copainsderoute.platine.service.UserService;
@@ -48,9 +50,10 @@ public class UserController {
     }
 
     @PatchMapping("me")
-    public ResponseEntity<UserResponseDTOs> updateUser(HttpServletRequest request, @RequestParam("login") String userLogin) throws RuntimeException{
-        User user = userService.updateUser(userLogin, jwtUtil.getLogin(request));
-        return ResponseEntity.ok(new UserResponseDTOs(user));
+    public ResponseEntity<ChangeLoginUserResponseDTO> updateUser(HttpServletRequest request, @RequestParam(value = "login", required = true) String newLogin) throws RuntimeException{
+        User user = userService.updateUser(newLogin, jwtUtil.getLogin(request));
+        String newToken = jwtUtil.createToken(user);
+        return ResponseEntity.ok(new ChangeLoginUserResponseDTO(new UserResponseDTOs(user), new LoginResponseDTO(newToken)));
     }
 
     @DeleteMapping("me")
