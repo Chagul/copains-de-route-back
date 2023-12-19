@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -55,5 +56,14 @@ public class AuthController {
         if(createdUser != null)
             return ResponseEntity.created(URI.create("/users/me")).build();
         return ResponseEntity.internalServerError().build();
+    }
+
+    @PostMapping("verifyToken")
+    public ResponseEntity<?> verifyJwt(@RequestParam(value = "token", required = true) String token) {
+        if(jwtUtil.isJwtTokenValid(token)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

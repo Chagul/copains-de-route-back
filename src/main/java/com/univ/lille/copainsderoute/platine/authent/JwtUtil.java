@@ -1,5 +1,7 @@
 package com.univ.lille.copainsderoute.platine.authent;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.univ.lille.copainsderoute.platine.entity.User;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +30,7 @@ public class JwtUtil {
         Claims claims = Jwts.claims().setSubject(user.getLogin());
         claims.put("login",user.getLogin());
         Date tokenCreateTime = new Date();
-        Date tokenValidity = new Date(tokenCreateTime.getTime() + TimeUnit.DAYS.toMillis(accessTokenValidity));
+        Date tokenValidity = new Date(tokenCreateTime.getTime() + TimeUnit.SECONDS.toMillis(accessTokenValidity));
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(tokenValidity)
@@ -80,5 +82,11 @@ public class JwtUtil {
 
     private List<String> getRoles(Claims claims) {
         return (List<String>) claims.get("roles");
+    }
+
+    public boolean isJwtTokenValid(String token) {
+        DecodedJWT decodedJWT = JWT.decode(token);
+        Date jwtExpiration = decodedJWT.getExpiresAt();
+        return new Date().before(jwtExpiration);
     }
 }
