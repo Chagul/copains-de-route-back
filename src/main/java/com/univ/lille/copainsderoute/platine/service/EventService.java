@@ -234,6 +234,10 @@ public class EventService {
             throw new RuntimeException("User not found");
         }
 
+        if(event.get().getMaxParticipants() == event.get().getParticipants().size()) {
+            throw new RuntimeException("Maximum number of participants reached for this event");
+        }
+
         long countIfUserIsInEvent = event.get().getParticipants().stream().filter(u -> u.equals(user)).count();
         if(countIfUserIsInEvent == 0) {
             // Ajoutez l'utilisateur à l'événement

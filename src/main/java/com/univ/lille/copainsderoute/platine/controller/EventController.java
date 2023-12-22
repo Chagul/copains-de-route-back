@@ -82,7 +82,7 @@ public class EventController {
     @PostMapping("/participate/{id}")
     public ResponseEntity<String> participate(HttpServletRequest request, @PathVariable("id") int id) throws RuntimeException{
         eventService.participate(id, jwtUtil.getLogin(request));
-        return ResponseEntity.ok("User added to the event");    
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("createdEvents")
