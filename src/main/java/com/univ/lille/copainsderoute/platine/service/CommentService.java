@@ -29,7 +29,7 @@ public class CommentService {
 
     private EventRepository eventRepository;
 
-    public CommentResponseDTOs createComment(CommentRequestDTOs commentRequestDTOs) throws UserNotFoundException, EventNotfoundException {
+    public int createComment(CommentRequestDTOs commentRequestDTOs) throws UserNotFoundException, EventNotfoundException {
         Comment comment = new Comment();
         comment.setSubmissionTime(LocalDateTime.now());
         comment.setContent(commentRequestDTOs.getContent());
@@ -43,18 +43,18 @@ public class CommentService {
 
         List<Comment> comments = event.getComments();
         comments.add(comment);
-        commentRepository.save(comment);
+        comment = commentRepository.save(comment);
         event.setComments(comments);
         eventRepository.save(event);
-        return new CommentResponseDTOs(comment);
+        return comment.getId();
     }
 
-    public List<Comment> getAllCommentsByEvent(int id) throws NoCommentException {
+    public List<CommentResponseDTOs> getAllCommentsByEvent(int id) throws NoCommentException {
         List<Comment> comments = commentRepository.findAllByEventId(id);
         if(comments.isEmpty()) {
             throw new NoCommentException();
         }
-        return comments;
+        return comments.stream().map(CommentResponseDTOs::new).toList();
     }
 
     public Comment updateComment(CommentRequestDTOs commentRequestDTOs, int id) throws CommentNotFoundException {

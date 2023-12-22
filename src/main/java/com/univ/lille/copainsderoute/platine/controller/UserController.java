@@ -6,6 +6,8 @@ import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.ChangeLoginUserRes
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.LoginResponseDTO;
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.UserResponseDTOs;
 import com.univ.lille.copainsderoute.platine.entity.User;
+import com.univ.lille.copainsderoute.platine.exceptions.UserNotFoundException;
+import com.univ.lille.copainsderoute.platine.exceptions.ZeroUserFoundException;
 import com.univ.lille.copainsderoute.platine.service.UserService;
 
 import io.jsonwebtoken.Claims;
@@ -36,22 +38,35 @@ public class UserController {
 
     @GetMapping("")
     public ResponseEntity<List<UserResponseDTOs>> getUsers() throws RuntimeException{
-        List<UserResponseDTOs> users = userService.getUsers();
-        if (users.isEmpty()) {
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        List<UserResponseDTOs> users = null;
+        try {
+            users = userService.getUsers();
+        } catch (ZeroUserFoundException e) {
+            return ResponseEntity.notFound().build();
         }
+
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("me")
     public ResponseEntity<UserResponseDTOs> getUser(HttpServletRequest request) throws RuntimeException{
-        UserResponseDTOs user = userService.getUserByLogin(jwtUtil.getLogin(request));
+        UserResponseDTOs user = null;
+        try {
+            user = userService.getUserByLogin(jwtUtil.getLogin(request));
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(user);
     }
 
     @PatchMapping("me")
     public ResponseEntity<ChangeLoginUserResponseDTO> updateUser(HttpServletRequest request, @RequestParam(value = "login", required = true) String newLogin) throws RuntimeException{
-        User user = userService.updateUser(newLogin, jwtUtil.getLogin(request));
+        User user = null;
+        try {
+            user = userService.updateUser(newLogin, jwtUtil.getLogin(request));
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
         String newToken = jwtUtil.createToken(user);
         return ResponseEntity.ok(new ChangeLoginUserResponseDTO(new UserResponseDTOs(user), new LoginResponseDTO(newToken)));
     }
@@ -59,7 +74,7 @@ public class UserController {
     @DeleteMapping("me")
     public ResponseEntity<?> deleteUser(HttpServletRequest request) throws RuntimeException{
         userService.deleteUser(jwtUtil.getLogin(request));
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok().build();
     }
 
 }

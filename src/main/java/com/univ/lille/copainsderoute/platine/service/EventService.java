@@ -39,8 +39,11 @@ public class EventService {
      * get all events
      * @return
      */
-    public List<EventResponseDTOs> getEvents() {
+    public List<EventResponseDTOs> getEvents() throws ZeroEventFoundException {
         List<Event> events = eventRepository.findAll();
+        if(events.isEmpty()) {
+            throw new ZeroEventFoundException();
+        }
         
         List<EventResponseDTOs> eventResponseDTOs = new ArrayList<>();
         for (Event event : events) {

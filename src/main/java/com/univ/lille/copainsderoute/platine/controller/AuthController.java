@@ -46,7 +46,7 @@ public class AuthController {
         }catch (BadCredentialsException e){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -55,7 +55,7 @@ public class AuthController {
         User createdUser = userService.createUser(userRegisterRequestDTOs);
         if(createdUser != null)
             return ResponseEntity.created(URI.create("/users/me")).build();
-        return ResponseEntity.internalServerError().build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @PostMapping("verifyToken")

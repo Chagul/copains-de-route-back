@@ -1,7 +1,10 @@
 package com.univ.lille.copainsderoute.platine.controller;
 
 import com.univ.lille.copainsderoute.platine.authent.JwtUtil;
+import com.univ.lille.copainsderoute.platine.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.coyote.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,46 +36,73 @@ public class EventController {
     private final JwtUtil jwtUtil;
 
     @GetMapping("")
-    public ResponseEntity<List<EventResponseDTOs>> getEvents() throws RuntimeException{
-        List<EventResponseDTOs> events = eventService.getEvents();
-        if (events.isEmpty()) {
+    public ResponseEntity<List<EventResponseDTOs>> getEvents() {
+        List<EventResponseDTOs> events = null;
+        try {
+            events = eventService.getEvents();
+        } catch (ZeroEventFoundException e) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(events);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<EventResponseDTOs> getEvent(@PathVariable("id") int id) throws RuntimeException{
-        EventResponseDTOs event = eventService.getEvent(id);
-        if (event == null) {
+    public ResponseEntity<EventResponseDTOs> getEvent(@PathVariable("id") int id) {
+        EventResponseDTOs event = null;
+        try {
+            event = eventService.getEvent(id);
+        } catch (EventNotfoundException e) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(event);
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createEvent(HttpServletRequest request, @RequestBody EventRequestDTOs eventRequestDTO) throws RuntimeException{
-        int eventId = eventService.createEvent(eventRequestDTO, jwtUtil.getLogin(request));
+    public ResponseEntity<?> createEvent(HttpServletRequest request, @RequestBody EventRequestDTOs eventRequestDTO) {
+        int eventId = 0;
+        try {
+            eventId = eventService.createEvent(eventRequestDTO, jwtUtil.getLogin(request));
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.created(URI.create("/events/" + eventId)).build();
     }
 
     @PatchMapping("{id}")
-    public ResponseEntity<Event> updateEvent(HttpServletRequest request, @PathVariable("id") int id, @RequestBody EventRequestDTOs eventRequestDTO) throws RuntimeException{
-        Event event = eventService.updateEvent(eventRequestDTO, id, jwtUtil.getLogin(request));
+    public ResponseEntity<Event> updateEvent(HttpServletRequest request, @PathVariable("id") int eventId, @RequestBody EventRequestDTOs eventRequestDTO) {
+        Event event = null;
+        try {
+            event = eventService.updateEvent(eventRequestDTO, eventId, jwtUtil.getLogin(request));
+        } catch (UserIsNotOwnerOfEventException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (EventNotfoundException | UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(event);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<?> deleteEvent(HttpServletRequest request, @PathVariable("id") int id) throws RuntimeException{
-        eventService.deleteEvent(id, jwtUtil.getLogin(request));
-        return ResponseEntity.ok(null);
+    public ResponseEntity<?> deleteEvent(HttpServletRequest request, @PathVariable("id") int id) {
+        try {
+            eventService.deleteEvent(id, jwtUtil.getLogin(request));
+        } catch (UserIsNotOwnerOfEventException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (EventNotfoundException | UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().build();
     }
     
 
     @GetMapping("/location")
-    public ResponseEntity<List<Event>> getEventsByLocation(@RequestBody GpsCoordinatesDTOs gpsCoordinatesDTO) throws RuntimeException {
-        
-        List<Event> itinerary = eventService.getEventsByLocation(gpsCoordinatesDTO);
+    public ResponseEntity<List<Event>> getEventsByLocation(@RequestBody GpsCoordinatesDTOs gpsCoordinatesDTO) {
+        List<Event> itinerary = null;
+        try {
+            itinerary = eventService.getEventsByLocation(gpsCoordinatesDTO);
+        } catch (ZeroEventFoundException | EventNotfoundException e) {
+            return ResponseEntity.noContent().build();
+        }
+
         if (itinerary == null || itinerary.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -80,14 +110,26 @@ public class EventController {
     }
 
     @PostMapping("/participate/{id}")
-    public ResponseEntity<String> participate(HttpServletRequest request, @PathVariable("id") int id) throws RuntimeException{
-        eventService.participate(id, jwtUtil.getLogin(request));
-        return ResponseEntity.ok("User added to the event");    
+    public ResponseEntity<String> participate(HttpServletRequest request, @PathVariable("id") int id) {
+        try {
+            eventService.participate(id, jwtUtil.getLogin(request));
+        } catch (EventNotfoundException | UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (UserAlreadyParticipatingException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("createdEvents")
-    public ResponseEntity<List<EventResponseDTOs>> getUsersByEvent(HttpServletRequest request) throws RuntimeException{
-        List<EventResponseDTOs> events = eventService.getEventsByUser(jwtUtil.getLogin(request));
+    public ResponseEntity<List<EventResponseDTOs>> getUsersByEvent(HttpServletRequest request) {
+        List<EventResponseDTOs> events = null;
+        try {
+            events = eventService.getEventsByUser(jwtUtil.getLogin(request));
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+
         if (events.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -95,8 +137,16 @@ public class EventController {
     }
 
     @GetMapping("participatedEvents")
-    public ResponseEntity<List<EventResponseDTOs>> getParticipatedEvents(HttpServletRequest request) throws RuntimeException{
-        List<EventResponseDTOs> events = eventService.getEventsByUserParticipated(jwtUtil.getLogin(request));
+    public ResponseEntity<List<EventResponseDTOs>> getParticipatedEvents(HttpServletRequest request) {
+        List<EventResponseDTOs> events = null;
+        try {
+            events = eventService.getEventsByUserParticipated(jwtUtil.getLogin(request));
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (UserNotParticipatingToAnyEventException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         if (events.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
