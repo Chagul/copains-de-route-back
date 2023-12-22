@@ -1,5 +1,6 @@
 package com.univ.lille.copainsderoute.platine.service;
 
+import com.univ.lille.copainsderoute.platine.exceptions.*;
 import com.univ.lille.copainsderoute.platine.repository.EventRepository;
 import com.univ.lille.copainsderoute.platine.repository.PointLatLngRepository;
 import com.univ.lille.copainsderoute.platine.repository.UserRepository;
@@ -49,35 +50,13 @@ public class EventService {
 
     }
 
-    public int createEvent(EventRequestDTOs eventRequestDTO, String login) throws RuntimeException {
-        User promoter = userRepository.findByLogin(login);
-    
-        if (promoter == null) {
-            throw new RuntimeException("Promoter not found");
-        }
-    
-        Event evt = new Event();
-        evt.setName(eventRequestDTO.getName());
-        evt.setDescription(eventRequestDTO.getDescription());
-        evt.setVisibility(eventRequestDTO.getVisibility());
-        evt.setMaxParticipants(eventRequestDTO.getMaxParticipants());
-        evt.setStartDate(eventRequestDTO.getStartDate());
-        evt.setStartTime(eventRequestDTO.getStartTime());
-        evt.setRoadType1(eventRequestDTO.getRoadType1());
-        evt.setRoadType2(eventRequestDTO.getRoadType2());
-        evt.setRoadType3(eventRequestDTO.getRoadType3());
-        evt.setBikeType1(eventRequestDTO.getBikeType1());
-        evt.setBikeType2(eventRequestDTO.getBikeType2());
-        evt.setStartAddress(eventRequestDTO.getStartAddress());
-        evt.setEndAddress(eventRequestDTO.getEndAddress());
-        
-        evt.setPromoter(promoter);
-        
-        evt.setRoute(eventRequestDTO.getRoute());
-        evt.setDistance(eventRequestDTO.getDistance());
-    
+    public int createEvent(EventRequestDTOs eventRequestDTO, String login) throws UserNotFoundException {
+        User promoter = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
+
+        Event evt = Event.getEventFromDTO(eventRequestDTO, promoter);
+
         eventRepository.save(evt);
-    
+
         for (PointLatLng stepDTO : eventRequestDTO.getSteps()) {
             PointLatLng point = new PointLatLng();
             point.setLatitude(stepDTO.getLatitude());
@@ -87,112 +66,51 @@ public class EventService {
             pointLatLngRepository.save(point);
             evt.getSteps().add(point);
         }
-    
+
         List<Event> events = promoter.getParticipatedEvent();
         events.add(evt);
         promoter.setParticipatedEvent(events);
         promoter.setNumberEventsCreated(promoter.getNumberEventsCreated() + 1);
         userRepository.save(promoter);
-    
+
         return evt.getId();
     }
-    
-    
-    
-    
-    public Event updateEvent (EventRequestDTOs eventRequestDTO, int id, String login) throws RuntimeException {
 
-        Optional<Event> evt = eventRepository.findById(id);
-
-        if(evt.isPresent()) {
-            User promoter = userRepository.findByLogin(login);
-            if (!evt.get().getPromoter().equals(promoter)) {
-                throw new RuntimeException("Authenticated user is not the owner of this event");
-            }
-
-            if (eventRequestDTO.getName() != null) {
-                evt.get().setName(eventRequestDTO.getName());
-            }
-
-            if (eventRequestDTO.getDescription() != null) {
-                evt.get().setDescription(eventRequestDTO.getDescription());
-            }
-
-            if (eventRequestDTO.getVisibility() != null) {
-                evt.get().setVisibility(eventRequestDTO.getVisibility());
-            }
-
-            if (eventRequestDTO.getMaxParticipants() != 0) {
-                evt.get().setMaxParticipants(eventRequestDTO.getMaxParticipants());
-            }
-
-            if (eventRequestDTO.getStartDate() != null) {
-                evt.get().setStartDate(eventRequestDTO.getStartDate());
-            }
-
-            if (eventRequestDTO.getStartTime() != null) {
-                evt.get().setStartTime(eventRequestDTO.getStartTime());
-            }
-
-            if (eventRequestDTO.getRoadType1() != null) {
-                evt.get().setRoadType1(eventRequestDTO.getRoadType1());
-            }
-
-            if (eventRequestDTO.getRoadType2() != null) {
-                evt.get().setRoadType2(eventRequestDTO.getRoadType2());
-            }
-
-            if (eventRequestDTO.getRoadType3() != null) {
-                evt.get().setRoadType3(eventRequestDTO.getRoadType3());
-            }
-
-            if (eventRequestDTO.getBikeType1() != null) {
-                evt.get().setBikeType1(eventRequestDTO.getBikeType1());
-            }
-
-            if (eventRequestDTO.getBikeType2() != null) {
-                evt.get().setBikeType2(eventRequestDTO.getBikeType2());
-            }
-
-            eventRepository.save(evt.get());
-            return evt.get();
+    public Event updateEvent (EventRequestDTOs eventRequestDTO, int id, String login) throws UserIsNotOwnerOfEventException, EventNotfoundException, UserNotFoundException {
+        Event evt = eventRepository.findById(id).orElseThrow(EventNotfoundException::new);
+        User promoter = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
+        if (!evt.getPromoter().equals(promoter)) {
+            throw new UserIsNotOwnerOfEventException();
         }
-        throw new RuntimeException("Event not found");
+        evt.updateFromDTO(eventRequestDTO);
+        eventRepository.save(evt);
+        return evt;
     }
 
-        
-    public void deleteEvent(int id, String login) {
-        Optional<Event> evt = eventRepository.findById(id);
-
-        if(evt.isPresent()) {
-            User promoter = userRepository.findByLogin(login);
-            if (!evt.get().getPromoter().equals(promoter)) {
-                throw new RuntimeException("Authenticated user is not the owner of this event");
-            }
-            eventRepository.deleteById(id);
+    public void deleteEvent(int id, String login) throws UserIsNotOwnerOfEventException, EventNotfoundException, UserNotFoundException {
+        Event evt = eventRepository.findById(id).orElseThrow(EventNotfoundException::new);
+        User promoter = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
+        if (!evt.getPromoter().equals(promoter)) {
+            throw new UserIsNotOwnerOfEventException();
         }
+        eventRepository.deleteById(id);
     }
 
-    public EventResponseDTOs getEvent(int id) throws RuntimeException {
-        Optional<Event> evt = eventRepository.findById(id);
-        if (evt.isEmpty()) {
-            throw new RuntimeException("Event not found");
-        }
-        return new EventResponseDTOs(evt.get());
+    public EventResponseDTOs getEvent(int id) throws EventNotfoundException {
+        Event evt = eventRepository.findById(id).orElseThrow(EventNotfoundException::new);
+        return new EventResponseDTOs(evt);
     }
 
-    public List<Event> getEventsByLocation(GpsCoordinatesDTOs gpsCoordinatesDTOs) {
+    public List<Event> getEventsByLocation(GpsCoordinatesDTOs gpsCoordinatesDTOs) throws ZeroEventFoundException, EventNotfoundException {
 
         List<Event> events = eventRepository.findByStartDate(LocalDate.now());
         List<Event> eventsByLocation = new ArrayList<>();
 
         if (events.isEmpty()) {
-            throw new RuntimeException("No event today");
+            throw new ZeroEventFoundException();
         }
         for (Event event : events) {
-
-            PointLatLng point = eventRepository.findById(event.getId()).get().getSteps().get(0);
-
+            PointLatLng point = eventRepository.findById(event.getId()).orElseThrow(EventNotfoundException::new).getSteps().get(0);
             boolean isInside = this.isInside(gpsCoordinatesDTOs, point.getLatitude(), point.getLongitude());
             if (isInside) {
                 eventsByLocation.add(event);
@@ -201,7 +119,7 @@ public class EventService {
         return eventsByLocation;
     }
 
-    public boolean isInside(GpsCoordinatesDTOs gpsCoordinatesDTOs, Double latitude, Double longitude) {
+    private boolean isInside(GpsCoordinatesDTOs gpsCoordinatesDTOs, Double latitude, Double longitude) {
 
         // Création des points du "rectangle"
         Coordinate northeast = new Coordinate(gpsCoordinatesDTOs.getNortheastLatitude(), gpsCoordinatesDTOs.getNortheastLongitude());
@@ -222,59 +140,43 @@ public class EventService {
 
     }
 
-    public void participate(int id, String userLogin) throws RuntimeException {
-        Optional<Event> event = eventRepository.findById(id);
-        User user = userRepository.findByLogin(userLogin);
+    public void participate(int id, String userLogin) throws EventNotfoundException, UserNotFoundException, UserAlreadyParticipatingException {
+        Event event = eventRepository.findById(id).orElseThrow(EventNotfoundException::new);
+        User user = userRepository.findByLogin(userLogin).orElseThrow(UserNotFoundException::new);
 
-        if (event.isEmpty()) {
-            throw new RuntimeException("Event not found");
-        }
-
-        if (user == null) {
-            throw new RuntimeException("User not found");
-        }
-
-        long countIfUserIsInEvent = event.get().getParticipants().stream().filter(u -> u.equals(user)).count();
+        long countIfUserIsInEvent = event.getParticipants().stream().filter(u -> u.equals(user)).count();
         if(countIfUserIsInEvent == 0) {
             // Ajoutez l'utilisateur à l'événement
-            event.get().getParticipants().add(user);
+            event.getParticipants().add(user);
 
             // Mettez à jour l'événement dans la base de données
-            eventRepository.save(event.get());
+            eventRepository.save(event);
 
             // Associez l'utilisateur à l'événement
-            List<Event> events = user.getParticipatedEvent();
-            events.add(event.get());
-            user.setParticipatedEvent(events);
+            user.getParticipatedEvent().add(event);
             user.setNumberEventsParticipated(user.getNumberEventsParticipated() + 1);
 
             // Mettez à jour l'utilisateur dans la base de données
             userRepository.save(user);
         }
-        throw new RuntimeException("User is already participating to this event");
+        throw new UserAlreadyParticipatingException();
     }
 
 
-    public List<EventResponseDTOs> getEventsByUser(String login) throws RuntimeException {
-        User user = userRepository.findByLogin(login);
-        if (user == null) {
-            throw new RuntimeException("User not found");
-        }
+    public List<EventResponseDTOs> getEventsByUser(String login) throws UserNotFoundException {
+        User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
+
         List<Event> events = eventRepository.findByPromoter(user);
         return events.stream().map(EventResponseDTOs::new).toList();
     }
 
-    public List<EventResponseDTOs> getEventsByUserParticipated(String login) throws RuntimeException {
-        User user = userRepository.findByLogin(login);
-        if (user == null) {
-            throw new RuntimeException("User not found");
-        }
+    public List<EventResponseDTOs> getEventsByUserParticipated(String login) throws UserNotFoundException, UserNotParticipatingToAnyEventException {
+        User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
 
         if (user.getNumberEventsParticipated() == 0) {
-            throw new RuntimeException("User has not participated to any event");
+            throw new UserNotParticipatingToAnyEventException();
         }
         List<Event> events = eventRepository.findByParticipants(user);
         return events.stream().map(EventResponseDTOs::new).toList();
-
     }
 }

@@ -4,6 +4,7 @@ import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.FriendsRequestDTOs;
 import com.univ.lille.copainsderoute.platine.entity.Friends;
 import com.univ.lille.copainsderoute.platine.entity.User;
 import com.univ.lille.copainsderoute.platine.enums.FriendRequestStatus;
+import com.univ.lille.copainsderoute.platine.exceptions.UserNotFoundException;
 import com.univ.lille.copainsderoute.platine.repository.FriendsRepository;
 import com.univ.lille.copainsderoute.platine.repository.UserRepository;
 
@@ -21,21 +22,12 @@ public class FriendsService {
 
     private UserRepository userRepository;
 
-    public FriendRequestStatus sendFriendRequest(FriendsRequestDTOs friendsRequestDTOs) throws RuntimeException{
+    public FriendRequestStatus sendFriendRequest(FriendsRequestDTOs friendsRequestDTOs) throws UserNotFoundException {
         
         Friends friends = new Friends();
 
-        User user1 = userRepository.findByLogin(friendsRequestDTOs.getLoginUser1());
-        User user2 = userRepository.findByLogin(friendsRequestDTOs.getLoginUser2());
-
-        if (user1 == null ) {
-            throw new RuntimeException("User 1 not found");
-        }
-
-        if (user2 == null ) {
-
-            throw new RuntimeException("User 2 not found");
-        }
+        User user1 = userRepository.findByLogin(friendsRequestDTOs.getLoginUser1()).orElseThrow(UserNotFoundException::new);
+        User user2 = userRepository.findByLogin(friendsRequestDTOs.getLoginUser2()).orElseThrow(UserNotFoundException::new);
 
         friends.setUser1(user1);
         friends.setUser2(user2);

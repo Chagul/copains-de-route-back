@@ -2,6 +2,7 @@ package com.univ.lille.copainsderoute.platine.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.EventRequestDTOs;
 import com.univ.lille.copainsderoute.platine.enums.BikeType;
 import com.univ.lille.copainsderoute.platine.enums.RoadType;
 import com.univ.lille.copainsderoute.platine.enums.Visibility;
@@ -96,6 +97,64 @@ public class Event {
 
     private String endAddress;
 
+    public void updateFromDTO(EventRequestDTOs eventRequestDTO) {
+        if (eventRequestDTO.getName() != null) {
+            this.setName(eventRequestDTO.getName());
+        }
+        if (eventRequestDTO.getDescription() != null) {
+            this.setDescription(eventRequestDTO.getDescription());
+        }
+        if (eventRequestDTO.getVisibility() != null) {
+            this.setVisibility(eventRequestDTO.getVisibility());
+        }
+        if (eventRequestDTO.getMaxParticipants() != 0) {
+            this.setMaxParticipants(eventRequestDTO.getMaxParticipants());
+        }
+        if (eventRequestDTO.getStartDate() != null) {
+            this.setStartDate(eventRequestDTO.getStartDate());
+        }
+        if (eventRequestDTO.getStartTime() != null) {
+            this.setStartTime(eventRequestDTO.getStartTime());
+        }
+        if (eventRequestDTO.getRoadType1() != null) {
+            this.setRoadType1(eventRequestDTO.getRoadType1());
+        }
+        if (eventRequestDTO.getRoadType2() != null) {
+            this.setRoadType2(eventRequestDTO.getRoadType2());
+        }
+        if (eventRequestDTO.getRoadType3() != null) {
+            this.setRoadType3(eventRequestDTO.getRoadType3());
+        }
+        if (eventRequestDTO.getBikeType1() != null) {
+            this.setBikeType1(eventRequestDTO.getBikeType1());
+        }
+        if (eventRequestDTO.getBikeType2() != null) {
+            this.setBikeType2(eventRequestDTO.getBikeType2());
+        }
+    }
+
+    public static Event getEventFromDTO(EventRequestDTOs eventRequestDTO, User promoter) {
+        Event evt = new Event();
+        evt.setName(eventRequestDTO.getName());
+        evt.setDescription(eventRequestDTO.getDescription());
+        evt.setVisibility(eventRequestDTO.getVisibility());
+        evt.setMaxParticipants(eventRequestDTO.getMaxParticipants());
+        evt.setStartDate(eventRequestDTO.getStartDate());
+        evt.setStartTime(eventRequestDTO.getStartTime());
+        evt.setRoadType1(eventRequestDTO.getRoadType1());
+        evt.setRoadType2(eventRequestDTO.getRoadType2());
+        evt.setRoadType3(eventRequestDTO.getRoadType3());
+        evt.setBikeType1(eventRequestDTO.getBikeType1());
+        evt.setBikeType2(eventRequestDTO.getBikeType2());
+        evt.setStartAddress(eventRequestDTO.getStartAddress());
+        evt.setEndAddress(eventRequestDTO.getEndAddress());
+
+        evt.setPromoter(promoter);
+
+        evt.setRoute(eventRequestDTO.getRoute());
+        evt.setDistance(eventRequestDTO.getDistance());
+        return evt;
+    }
 }
 
 
