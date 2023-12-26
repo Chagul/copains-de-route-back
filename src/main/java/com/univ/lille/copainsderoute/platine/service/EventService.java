@@ -181,7 +181,7 @@ public class EventService {
         return new EventResponseDTOs(evt.get());
     }
 
-    public List<Event> getEventsByLocation(GpsCoordinatesDTOs gpsCoordinatesDTOs) {
+    public List<EventResponseDTOs> getEventsByLocation(GpsCoordinatesDTOs gpsCoordinatesDTOs) {
 
         List<Event> events = eventRepository.findByStartDate(LocalDate.now());
         List<Event> eventsByLocation = new ArrayList<>();
@@ -198,7 +198,12 @@ public class EventService {
                 eventsByLocation.add(event);
             }
         }
-        return eventsByLocation;
+        List<EventResponseDTOs> eventResp = new ArrayList<>();
+        for(Event event : eventsByLocation) {
+        	eventResp.add(new EventResponseDTOs(event));
+        }
+
+        return eventResp;
     }
 
     public boolean isInside(GpsCoordinatesDTOs gpsCoordinatesDTOs, Double latitude, Double longitude) {
