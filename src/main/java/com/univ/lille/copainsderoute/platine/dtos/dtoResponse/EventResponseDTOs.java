@@ -91,6 +91,8 @@ public class EventResponseDTOs {
         this.endAddress = event.getEndAddress();
     }
 
-    
+    public boolean isFull() {
+        return this.participants.size() == this.getMaxParticipants();
+    }
 
 }
