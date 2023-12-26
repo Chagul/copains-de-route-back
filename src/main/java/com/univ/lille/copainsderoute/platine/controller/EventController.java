@@ -69,10 +69,10 @@ public class EventController {
     }
     
 
-    @GetMapping("/location")
-    public ResponseEntity<List<Event>> getEventsByLocation(@RequestBody GpsCoordinatesDTOs gpsCoordinatesDTO) throws RuntimeException {
+    @PostMapping("/location")
+    public ResponseEntity<List<EventResponseDTOs>> getEventsByLocation(@RequestBody GpsCoordinatesDTOs gpsCoordinatesDTO) throws RuntimeException {
         
-        List<Event> itinerary = eventService.getEventsByLocation(gpsCoordinatesDTO);
+        List<EventResponseDTOs> itinerary = eventService.getEventsByLocation(gpsCoordinatesDTO);
         if (itinerary == null || itinerary.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
