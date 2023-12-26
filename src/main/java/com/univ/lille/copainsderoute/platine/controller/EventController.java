@@ -117,6 +117,18 @@ public class EventController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("discard/{id}")
+    public ResponseEntity<String> discard(HttpServletRequest request, @PathVariable("id") int id) {
+        try {
+            eventService.discard(id, jwtUtil.getLogin(request));
+        } catch (EventNotfoundException | UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (UserNotParticipatingToEventException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("createdEvents")
     public ResponseEntity<List<EventResponseDTOs>> getUsersByEvent(HttpServletRequest request) {
         List<EventResponseDTOs> events = null;
