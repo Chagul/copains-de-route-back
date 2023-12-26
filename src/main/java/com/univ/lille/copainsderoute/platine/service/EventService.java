@@ -198,10 +198,7 @@ public class EventService {
                 eventsByLocation.add(event);
             }
         }
-        List<EventResponseDTOs> eventResp = new ArrayList<>();
-        for(Event event : eventsByLocation) {
-        	eventResp.add(new EventResponseDTOs(event));
-        }
+        List<EventResponseDTOs> eventResp = eventsByLocation.stream().map(EventResponseDTOs::new).toList();
 
         return eventResp;
     }
