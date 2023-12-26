@@ -147,8 +147,7 @@ public class EventService {
         Event event = eventRepository.findById(id).orElseThrow(EventNotfoundException::new);
         User user = userRepository.findByLogin(userLogin).orElseThrow(UserNotFoundException::new);
 
-        long countIfUserIsInEvent = event.getParticipants().stream().filter(u -> u.equals(user)).count();
-        if(countIfUserIsInEvent == 0) {
+        if(!event.isUserInParticipants(user)) {
             // Ajoutez l'utilisateur à l'événement
             event.getParticipants().add(user);
 
@@ -162,9 +161,25 @@ public class EventService {
             // Mettez à jour l'utilisateur dans la base de données
             userRepository.save(user);
         }
-        throw new UserAlreadyParticipatingException();
+        else {
+            throw new UserAlreadyParticipatingException();
+        }
     }
 
+    public void discard(int id, String userLogin) throws EventNotfoundException, UserNotFoundException, UserNotParticipatingToEventException {
+        Event event = eventRepository.findById(id).orElseThrow(EventNotfoundException::new);
+        User user = userRepository.findByLogin(userLogin).orElseThrow(UserNotFoundException::new);
+
+        if(event.isUserInParticipants(user)) {
+            event.getParticipants().remove(user);
+            eventRepository.save(event);
+            user.getParticipatedEvent().remove(event);
+            user.setNumberEventsParticipated(user.getNumberEventsParticipated()-1);
+            userRepository.save(user);
+        } else {
+            throw new UserNotParticipatingToEventException();
+        }
+    }
 
     public List<EventResponseDTOs> getEventsByUser(String login) throws UserNotFoundException {
         User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);

@@ -155,6 +155,10 @@ public class Event {
         evt.setDistance(eventRequestDTO.getDistance());
         return evt;
     }
+
+    public boolean isUserInParticipants(User u) {
+        return this.getParticipants().contains(u);
+    }
 }
 
 
