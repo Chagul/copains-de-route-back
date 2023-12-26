@@ -1,5 +1,6 @@
 package com.univ.lille.copainsderoute.platine.entity;
 
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.UserRegisterRequestDTOs;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -54,12 +55,15 @@ public class User {
     @ManyToMany(mappedBy = "participants")
     @JsonIgnore
     private List<Event> participatedEvent = new ArrayList<>();
-    
-
-    
 
     // TODO add profile image
 
+    public static User getUserFromDTO(UserRegisterRequestDTOs userRequestDTO) {
+        User user = new User();
+        user.setLogin(userRequestDTO.getLogin());
+        user.setEmail(userRequestDTO.getEmail());
+        return user;
+    }
 }
 
 

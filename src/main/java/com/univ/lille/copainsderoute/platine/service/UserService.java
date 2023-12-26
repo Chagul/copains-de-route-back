@@ -1,5 +1,7 @@
 package com.univ.lille.copainsderoute.platine.service;
 
+import com.univ.lille.copainsderoute.platine.exceptions.UserNotFoundException;
+import com.univ.lille.copainsderoute.platine.exceptions.ZeroUserFoundException;
 import com.univ.lille.copainsderoute.platine.repository.UserRepository;
 import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.*;
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.UserResponseDTOs;
@@ -24,47 +26,35 @@ public class UserService {
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
 
-    public List<UserResponseDTOs> getUsers() {
+    public List<UserResponseDTOs> getUsers() throws ZeroUserFoundException {
         List<User> users = userRepository.findAll();
+        if(users.isEmpty()) {
+            throw new ZeroUserFoundException();
+        }
         List<UserResponseDTOs> userResponseDTOs = new ArrayList<>();
         for (User user : users) {
            UserResponseDTOs userResponseDTO = new UserResponseDTOs(user);
            userResponseDTOs.add(userResponseDTO);
-            
         }
         return userResponseDTOs;
     }
 
     public User createUser(UserRegisterRequestDTOs userRequestDTO) {
-    
-        User user = new User();
-
-        user.setLogin(userRequestDTO.getLogin());
-        user.setEmail(userRequestDTO.getEmail());
+        User user = User.getUserFromDTO(userRequestDTO);
         user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
-
-       return userRepository.save(user);
+        return userRepository.save(user);
     }
 
-    public UserResponseDTOs getUserByLogin(String login) throws RuntimeException{
-        User user = userRepository.findByLogin(login);
-        if (user == null) {
-            throw new RuntimeException("User not found");
-        }
+    public UserResponseDTOs getUserByLogin(String login) throws UserNotFoundException {
+        User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
         return new UserResponseDTOs(user);
     }
 
-    public User updateUser(String loginChange, String userLogin) throws RuntimeException{
-        
-        User user = userRepository.findByLogin(userLogin);
-        if (user == null) {
-            throw new RuntimeException("User not found");
-        }
-
+    public User updateUser(String loginChange, String userLogin) throws UserNotFoundException {
+        User user = userRepository.findByLogin(userLogin).orElseThrow(UserNotFoundException::new);
         if (StringUtils.hasText(loginChange)) {
             user.setLogin(loginChange);
         }
-
         user = userRepository.save(user);
         return user;
     }

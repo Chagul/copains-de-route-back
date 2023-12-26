@@ -4,6 +4,10 @@ import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.CommentResponseDTO
 import com.univ.lille.copainsderoute.platine.entity.Comment;
 import com.univ.lille.copainsderoute.platine.entity.Event;
 import com.univ.lille.copainsderoute.platine.entity.User;
+import com.univ.lille.copainsderoute.platine.exceptions.CommentNotFoundException;
+import com.univ.lille.copainsderoute.platine.exceptions.EventNotfoundException;
+import com.univ.lille.copainsderoute.platine.exceptions.NoCommentException;
+import com.univ.lille.copainsderoute.platine.exceptions.UserNotFoundException;
 import com.univ.lille.copainsderoute.platine.repository.CommentRepository;
 import com.univ.lille.copainsderoute.platine.repository.EventRepository;
 import com.univ.lille.copainsderoute.platine.repository.UserRepository;
@@ -25,44 +29,36 @@ public class CommentService {
 
     private EventRepository eventRepository;
 
-    public CommentResponseDTOs createComment(CommentRequestDTOs commentRequestDTOs) throws RuntimeException {
-
-        
+    public int createComment(CommentRequestDTOs commentRequestDTOs) throws UserNotFoundException, EventNotfoundException {
         Comment comment = new Comment();
-
         comment.setSubmissionTime(LocalDateTime.now());
         comment.setContent(commentRequestDTOs.getContent());
         comment.setLikes(0);
 
-        Event event = eventRepository.findById(commentRequestDTOs.getEvent()).orElseThrow(() -> new RuntimeException("Event not found"));
-        User user = userRepository.findByLogin(commentRequestDTOs.getUserWhoCommented());
+        Event event = eventRepository.findById(commentRequestDTOs.getEvent()).orElseThrow(EventNotfoundException::new);
+        User user = userRepository.findByLogin(commentRequestDTOs.getUserWhoCommented()).orElseThrow(UserNotFoundException::new);
 
-        if (user == null) {
-            throw new RuntimeException("User not found");
-        }
         comment.setEvent(event);
         comment.setUserWhoCommented(commentRequestDTOs.getUserWhoCommented());
 
         List<Comment> comments = event.getComments();
         comments.add(comment);
-
-        commentRepository.save(comment);
-
+        comment = commentRepository.save(comment);
         event.setComments(comments);
         eventRepository.save(event);
-
-        return new CommentResponseDTOs(comment);
-
-
+        return comment.getId();
     }
 
-    public List<Comment> getAllCommentsByEvent(int id) {
+    public List<CommentResponseDTOs> getAllCommentsByEvent(int id) throws NoCommentException {
         List<Comment> comments = commentRepository.findAllByEventId(id);
-        return comments;
+        if(comments.isEmpty()) {
+            throw new NoCommentException();
+        }
+        return comments.stream().map(CommentResponseDTOs::new).toList();
     }
 
-    public Comment updateComment(CommentRequestDTOs commentRequestDTOs, int id) throws RuntimeException {
-        Comment comment = commentRepository.findById(id).orElseThrow(() -> new RuntimeException("Comment not found"));
+    public Comment updateComment(CommentRequestDTOs commentRequestDTOs, int id) throws CommentNotFoundException {
+        Comment comment = commentRepository.findById(id).orElseThrow(CommentNotFoundException::new);
         if (commentRequestDTOs.getContent() != null){
             comment.setContent(commentRequestDTOs.getContent());
         }
@@ -73,8 +69,8 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    public void deleteComment(int id) throws RuntimeException {
-        Comment comment = commentRepository.findById(id).orElseThrow(() -> new RuntimeException("Comment not found"));
+    public void deleteComment(int id) throws CommentNotFoundException {
+        Comment comment = commentRepository.findById(id).orElseThrow(CommentNotFoundException::new);
         commentRepository.delete(comment);
     }
 }
