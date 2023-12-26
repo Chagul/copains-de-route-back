@@ -104,8 +104,7 @@ public class EventService {
         return new EventResponseDTOs(evt);
     }
 
-    public List<Event> getEventsByLocation(GpsCoordinatesDTOs gpsCoordinatesDTOs) throws ZeroEventFoundException, EventNotfoundException {
-
+    public List<EventResponseDTOs> getEventsByLocation(GpsCoordinatesDTOs gpsCoordinatesDTOs) throws ZeroEventFoundException, EventNotfoundException {
         List<Event> events = eventRepository.findByStartDate(LocalDate.now());
         List<Event> eventsByLocation = new ArrayList<>();
 
@@ -119,7 +118,8 @@ public class EventService {
                 eventsByLocation.add(event);
             }
         }
-        return eventsByLocation;
+        List<EventResponseDTOs> eventResp = eventsByLocation.stream().map(EventResponseDTOs::new).toList();
+        return eventResp;
     }
 
     private boolean isInside(GpsCoordinatesDTOs gpsCoordinatesDTOs, Double latitude, Double longitude) {

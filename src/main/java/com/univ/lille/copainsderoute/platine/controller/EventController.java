@@ -94,22 +94,18 @@ public class EventController {
     }
     
 
-    @GetMapping("/location")
-    public ResponseEntity<List<Event>> getEventsByLocation(@RequestBody GpsCoordinatesDTOs gpsCoordinatesDTO) {
-        List<Event> itinerary = null;
+    @GetMapping("location")
+    public ResponseEntity<List<EventResponseDTOs>> getEventsByLocation(@RequestBody GpsCoordinatesDTOs gpsCoordinatesDTO) {
+        List<EventResponseDTOs> itinerary = null;
         try {
             itinerary = eventService.getEventsByLocation(gpsCoordinatesDTO);
         } catch (ZeroEventFoundException | EventNotfoundException e) {
             return ResponseEntity.noContent().build();
         }
-
-        if (itinerary == null || itinerary.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
         return ResponseEntity.ok(itinerary);
     }
 
-    @PostMapping("/participate/{id}")
+    @PostMapping("participate/{id}")
     public ResponseEntity<String> participate(HttpServletRequest request, @PathVariable("id") int id) {
         try {
             eventService.participate(id, jwtUtil.getLogin(request));
