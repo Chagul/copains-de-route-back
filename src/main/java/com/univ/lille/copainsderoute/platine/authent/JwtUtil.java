@@ -7,6 +7,7 @@ import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -85,6 +86,9 @@ public class JwtUtil {
     }
 
     public boolean isJwtTokenValid(String token) {
+        if(!StringUtils.hasLength(token) || "null".equalsIgnoreCase(token)) {
+            return false;
+        }
         DecodedJWT decodedJWT = JWT.decode(token);
         Date jwtExpiration = decodedJWT.getExpiresAt();
         return new Date().before(jwtExpiration);
