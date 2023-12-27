@@ -6,6 +6,7 @@ import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.ChangeLoginUserRes
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.LoginResponseDTO;
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.UserResponseDTOs;
 import com.univ.lille.copainsderoute.platine.entity.User;
+import com.univ.lille.copainsderoute.platine.exceptions.ProfilePicNotFoundException;
 import com.univ.lille.copainsderoute.platine.exceptions.UserNotFoundException;
 import com.univ.lille.copainsderoute.platine.exceptions.ZeroUserFoundException;
 import com.univ.lille.copainsderoute.platine.service.UserService;
@@ -13,7 +14,11 @@ import com.univ.lille.copainsderoute.platine.service.UserService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
+import org.apache.coyote.Response;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +31,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
+
+import java.io.FileNotFoundException;
 import java.util.List;
 
 @RestController
@@ -77,4 +84,14 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping(value = "{id}/profilePic", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<Resource> getProfilePic(@PathVariable("id") int userId) {
+        InputStreamResource resource = null;
+        try {
+            resource = userService.getProfilePic(userId);
+        } catch (ProfilePicNotFoundException | FileNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(resource);
+    }
 }

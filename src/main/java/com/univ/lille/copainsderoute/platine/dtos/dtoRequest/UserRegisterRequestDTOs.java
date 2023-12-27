@@ -14,4 +14,8 @@ public class UserRegisterRequestDTOs {
     private String email;
 
     private String password;
+
+    private String base64ProfilePic;
+
+    private String profilePicFormat;
 }

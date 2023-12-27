@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.net.URI;
 
 @RestController
@@ -52,7 +53,12 @@ public class AuthController {
 
     @PostMapping("register")
     public ResponseEntity<?> createUser(@RequestBody UserRegisterRequestDTOs userRegisterRequestDTOs){
-        User createdUser = userService.createUser(userRegisterRequestDTOs);
+        User createdUser = null;
+        try {
+            createdUser = userService.createUser(userRegisterRequestDTOs);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
         if(createdUser != null)
             return ResponseEntity.created(URI.create("/users/me")).build();
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
