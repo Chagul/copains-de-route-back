@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Service
 @AllArgsConstructor
@@ -119,7 +120,7 @@ public class EventService {
             }
         }
         List<EventResponseDTOs> eventResp = eventsByLocation.stream().map(EventResponseDTOs::new).toList();
-        return eventResp;
+        return removeFullEvents(eventResp);
     }
 
     private boolean isInside(GpsCoordinatesDTOs gpsCoordinatesDTOs, Double latitude, Double longitude) {
@@ -196,5 +197,9 @@ public class EventService {
         }
         List<Event> events = eventRepository.findByParticipants(user);
         return events.stream().map(EventResponseDTOs::new).toList();
+    }
+
+    private List<EventResponseDTOs> removeFullEvents(List<EventResponseDTOs> events) {
+        return events.stream().filter(Predicate.not(EventResponseDTOs::isFull)).toList();
     }
 }
