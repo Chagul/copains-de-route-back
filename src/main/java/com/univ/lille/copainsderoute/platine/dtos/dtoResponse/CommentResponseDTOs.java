@@ -11,6 +11,7 @@ public class CommentResponseDTOs {
    
     public CommentResponseDTOs(Comment comment) {
 
+        this.id = comment.getId();
         this.login = comment.getUserWhoCommented();
         this.content = comment.getContent();
         this.date = comment.getSubmissionTime();
@@ -18,6 +19,7 @@ public class CommentResponseDTOs {
 
 
     }
+    private int id;
     private String login;
     private String content;
     private LocalDateTime date;
