@@ -41,7 +41,7 @@ public class CommentsController {
         } catch (UserNotFoundException | EventNotfoundException e) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.created(URI.create("/comments/" + createdCommentId)).build();
+        return ResponseEntity.created(URI.create("/comments/" + createdCommentId)).body(createdCommentId);
     }
     
    @GetMapping("{event_id}")
