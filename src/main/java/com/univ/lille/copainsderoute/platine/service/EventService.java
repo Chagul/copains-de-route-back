@@ -198,7 +198,7 @@ public class EventService {
         if (user.getNumberEventsParticipated() == 0) {
             throw new UserNotParticipatingToAnyEventException();
         }
-        List<Event> events = eventRepository.findByParticipants(user);
+        List<Event> events = user.getParticipatedEvent();
         return events.stream().map(event -> new EventResponseDTOs(event, userService.getUserProfilePicLocation(event.getPromoter()))).toList();
     }
 
