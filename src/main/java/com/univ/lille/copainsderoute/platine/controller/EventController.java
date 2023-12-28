@@ -153,7 +153,7 @@ public class EventController {
         } catch (UserNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (UserNotParticipatingToAnyEventException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.noContent().build();
         }
 
         if (events.isEmpty()) {
