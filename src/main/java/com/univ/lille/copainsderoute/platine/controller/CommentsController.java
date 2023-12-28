@@ -77,7 +77,7 @@ public class CommentsController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("{comment_id}/like/{user_login}}")
+    @PatchMapping("{comment_id}/like/{user_login}")
     public ResponseEntity<Comment> likeComment(@PathVariable("comment_id") int id, @PathVariable("user_login") String login) {
         Comment likedComment = null;
         try {
@@ -88,7 +88,7 @@ public class CommentsController {
         return ResponseEntity.ok(likedComment);
     }
 
-    @PatchMapping("{comment_id}/unlike/{user_login}}")
+    @PatchMapping("{comment_id}/unlike/{user_login}")
     public ResponseEntity<Comment> unlikeComment(@PathVariable("comment_id") int id, @PathVariable("user_login") String login) {
         Comment likedComment = null;
         try {
