@@ -25,8 +25,6 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 
     public List<Event> findByPromoter(User promoter);
 
-    public List<Event> findByParticipants(User participant);
-
     @Query(value = "SELECT e FROM Event e WHERE e.startDate BETWEEN :startDate and :endDate AND e.distance BETWEEN :minDistance AND :maxDistance AND (e.bikeType1 in :bikeTypes or e.bikeType2 in :bikeTypes) AND e.visibility in :visibility AND (e.roadType1 in :roadTypes OR e.roadType2 in :roadTypes OR e.roadType3 in :roadTypes)")
     public List<Event> findByFilter(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, @Param("minDistance") int minDistance, @Param("maxDistance") int maxDistance, @Param("visibility")List<Visibility> visibility, @Param("roadTypes")List<RoadType> roadTypes, @Param("bikeTypes")List<BikeType> bikeTypes);
 }
