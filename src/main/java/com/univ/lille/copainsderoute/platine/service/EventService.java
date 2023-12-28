@@ -215,19 +215,15 @@ public class EventService {
         List<Friends> friends = user.getFriends();
 
         for(Event e : events){
-            if(e.getVisibility() == Visibility.PUBLIC){
+            if(e.getVisibility() == Visibility.PUBLIC || e.getPromoter().getId() == user.getId()) {
                 eventsFilteredVisibility.add(e);
-                continue;
-            }
-            if(e.getPromoter().getId() == user.getId()) {
-                eventsFilteredVisibility.add(e);
-                continue;
-            }
-            for(Friends friend : friends){
-                    if(friend.getUser1().getId() == user.getId() || friend.getUser2().getId() == user.getId()){
+            } else {
+                for (Friends friend : friends) {
+                    if (friend.getUser1().getId() == e.getPromoter().getId() || friend.getUser2().getId() == e.getPromoter().getId()) {
                         eventsFilteredVisibility.add(e);
                     }
                 }
+            }
         }
 
         if(eventsFilteredVisibility.isEmpty()){
