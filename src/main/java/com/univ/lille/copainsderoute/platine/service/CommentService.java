@@ -77,6 +77,9 @@ public class CommentService {
     public Comment likeComment (int id, String login) throws CommentNotFoundException, UserNotFoundException {
         Comment comment = commentRepository.findById(id).orElseThrow(CommentNotFoundException::new);
         User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
+        if (comment.getUsersWhoLiked().contains(user.getLogin())){
+            return comment;
+        }
         comment.setLikes(comment.getLikes()+1);
         comment.getUsersWhoLiked().add(login);
         return commentRepository.save(comment);
@@ -85,6 +88,9 @@ public class CommentService {
     public Comment unlikeComment (int id, String login) throws CommentNotFoundException, UserNotFoundException {
         Comment comment = commentRepository.findById(id).orElseThrow(CommentNotFoundException::new);
         User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
+        if (!comment.getUsersWhoLiked().contains(user.getLogin())){
+            return comment;
+        }
         comment.setLikes(comment.getLikes()-1);
         comment.getUsersWhoLiked().remove(login);
         return commentRepository.save(comment);

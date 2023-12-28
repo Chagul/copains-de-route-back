@@ -17,7 +17,7 @@ public class CommentResponseDTOs {
         this.content = comment.getContent();
         this.date = comment.getSubmissionTime();
         this.likes = comment.getLikes();
-        this.usersWhoLiked = comment.getUsersWhoLiked();
+        this.userLiked = comment.getUsersWhoLiked().contains(this.login);
 
 
     }
@@ -26,6 +26,6 @@ public class CommentResponseDTOs {
     private String content;
     private LocalDateTime date;
     private int likes;
-    private List<String> usersWhoLiked;
+    private boolean userLiked;
 
 }
