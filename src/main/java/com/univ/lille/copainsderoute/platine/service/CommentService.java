@@ -73,4 +73,20 @@ public class CommentService {
         Comment comment = commentRepository.findById(id).orElseThrow(CommentNotFoundException::new);
         commentRepository.delete(comment);
     }
+
+    public Comment likeComment (int id, String login) throws CommentNotFoundException, UserNotFoundException {
+        Comment comment = commentRepository.findById(id).orElseThrow(CommentNotFoundException::new);
+        User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
+        comment.setLikes(comment.getLikes()+1);
+        comment.getUsersWhoLiked().add(login);
+        return commentRepository.save(comment);
+    }
+
+    public Comment unlikeComment (int id, String login) throws CommentNotFoundException, UserNotFoundException {
+        Comment comment = commentRepository.findById(id).orElseThrow(CommentNotFoundException::new);
+        User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
+        comment.setLikes(comment.getLikes()-1);
+        comment.getUsersWhoLiked().remove(login);
+        return commentRepository.save(comment);
+    }
 }

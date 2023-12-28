@@ -76,4 +76,26 @@ public class CommentsController {
         }
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("{comment_id}/like/{user_login}}")
+    public ResponseEntity<Comment> likeComment(@PathVariable("comment_id") int id, @PathVariable("user_login") String login) {
+        Comment likedComment = null;
+        try {
+            likedComment = commentService.likeComment(id, login);
+        } catch (CommentNotFoundException | UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(likedComment);
+    }
+
+    @PatchMapping("{comment_id}/unlike/{user_login}}")
+    public ResponseEntity<Comment> unlikeComment(@PathVariable("comment_id") int id, @PathVariable("user_login") String login) {
+        Comment likedComment = null;
+        try {
+            likedComment = commentService.unlikeComment(id, login);
+        } catch (CommentNotFoundException | UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(likedComment);
+    }
 }

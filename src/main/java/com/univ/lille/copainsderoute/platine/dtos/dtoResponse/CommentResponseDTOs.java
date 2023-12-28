@@ -1,6 +1,7 @@
 package com.univ.lille.copainsderoute.platine.dtos.dtoResponse;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.univ.lille.copainsderoute.platine.entity.Comment;
 
@@ -16,6 +17,7 @@ public class CommentResponseDTOs {
         this.content = comment.getContent();
         this.date = comment.getSubmissionTime();
         this.likes = comment.getLikes();
+        this.usersWhoLiked = comment.getUsersWhoLiked();
 
 
     }
@@ -24,5 +26,6 @@ public class CommentResponseDTOs {
     private String content;
     private LocalDateTime date;
     private int likes;
+    private List<String> usersWhoLiked;
 
 }
