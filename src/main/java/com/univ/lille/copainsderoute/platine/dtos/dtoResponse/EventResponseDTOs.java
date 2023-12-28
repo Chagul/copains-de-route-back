@@ -18,13 +18,14 @@ import com.univ.lille.copainsderoute.platine.entity.User;
 import com.univ.lille.copainsderoute.platine.enums.BikeType;
 import com.univ.lille.copainsderoute.platine.enums.RoadType;
 import com.univ.lille.copainsderoute.platine.enums.Visibility;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Data   
 @AllArgsConstructor
 public class EventResponseDTOs {
 
     @JsonIgnore
-    UserService userService;
+    private UserService userService;
 
     private int id;
 
@@ -32,6 +33,7 @@ public class EventResponseDTOs {
     private String description;
 
     private String promoter;
+    private String promoterProfilePicLocation;
     private int maxParticipants;
 
     private String startDate;
@@ -58,12 +60,12 @@ public class EventResponseDTOs {
 
 
 
-    public EventResponseDTOs(Event event) {
+    public EventResponseDTOs(Event event, String promoterProfilePicLocation) {
         this.id = event.getId();
         this.name = event.getName();
-
         this.description = event.getDescription();
         this.promoter = event.getPromoter().getLogin();
+        this.promoterProfilePicLocation = promoterProfilePicLocation;
         this.maxParticipants = event.getMaxParticipants();
         this.startDate = event.getStartDate().toString();
         this.startTime = event.getStartTime().toString();
@@ -81,7 +83,7 @@ public class EventResponseDTOs {
         }
 
         for (User user : event.getParticipants()){
-            UserResponseDTOs userResponseDTOs = new UserResponseDTOs(user, userService.userWithProfilePic(user.getId()));
+            UserResponseDTOs userResponseDTOs = new UserResponseDTOs(user, userService.getUserProfilePicLocation(user));
             this.participants.add(userResponseDTOs);
         }
         
@@ -99,5 +101,4 @@ public class EventResponseDTOs {
     public boolean isFull() {
         return this.participants.size() == this.getMaxParticipants();
     }
-
 }

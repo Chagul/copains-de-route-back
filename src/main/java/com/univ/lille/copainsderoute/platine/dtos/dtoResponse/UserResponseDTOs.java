@@ -13,18 +13,13 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserResponseDTOs {
 
-    private static final String USER_PATH = "/users/";
-    private static final String PROFILE_PIC_PATH = "/profilePic";
-
-    public UserResponseDTOs(User user, boolean withProfilePic) {
+    public UserResponseDTOs(User user, String profilePicLocation) {
         this.login = user.getLogin();
         this.numberEventsParticipated = user.getNumberEventsParticipated();
         this.numberEventsCreated = user.getNumberEventsCreated();
         this.distanceTraveled = user.getDistanceTraveled();
         this.co2NotEmitted = user.getCo2_not_emitted();
-        if(withProfilePic) {
-            this.profilePicLocation = USER_PATH.concat(String.valueOf(user.getId())).concat(PROFILE_PIC_PATH);
-        }
+        this.profilePicLocation = profilePicLocation;
     }
 
     private String login;

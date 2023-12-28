@@ -31,8 +31,8 @@ import java.util.function.Predicate;
 @AllArgsConstructor
 public class EventService {
 
-    
     private final EventRepository eventRepository;
+    private final UserService userService;
     private final UserRepository userRepository;
     private final PointLatLngRepository pointLatLngRepository;
 
@@ -48,7 +48,7 @@ public class EventService {
         
         List<EventResponseDTOs> eventResponseDTOs = new ArrayList<>();
         for (Event event : events) {
-            eventResponseDTOs.add(new EventResponseDTOs(event));
+            eventResponseDTOs.add(new EventResponseDTOs(event, userService.getUserProfilePicLocation(event.getPromoter())));
         }
         return eventResponseDTOs;
 
@@ -102,7 +102,7 @@ public class EventService {
 
     public EventResponseDTOs getEvent(int id) throws EventNotfoundException {
         Event evt = eventRepository.findById(id).orElseThrow(EventNotfoundException::new);
-        return new EventResponseDTOs(evt);
+        return new EventResponseDTOs(evt, userService.getUserProfilePicLocation(evt.getPromoter()));
     }
 
     public List<EventResponseDTOs> getEventsByLocation(GpsCoordinatesDTOs gpsCoordinatesDTOs) throws ZeroEventFoundException, EventNotfoundException {
@@ -119,7 +119,7 @@ public class EventService {
                 eventsByLocation.add(event);
             }
         }
-        List<EventResponseDTOs> eventResp = eventsByLocation.stream().map(EventResponseDTOs::new).toList();
+        List<EventResponseDTOs> eventResp = eventsByLocation.stream().map(event -> new EventResponseDTOs(event, userService.getUserProfilePicLocation(event.getPromoter()))).toList();
         return removeFullEvents(eventResp);
     }
 
@@ -186,7 +186,7 @@ public class EventService {
         User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
 
         List<Event> events = eventRepository.findByPromoter(user);
-        return events.stream().map(EventResponseDTOs::new).toList();
+        return events.stream().map(event -> new EventResponseDTOs(event, userService.getUserProfilePicLocation(event.getPromoter()))).toList();
     }
 
     public List<EventResponseDTOs> getEventsByUserParticipated(String login) throws UserNotFoundException, UserNotParticipatingToAnyEventException {
@@ -196,7 +196,7 @@ public class EventService {
             throw new UserNotParticipatingToAnyEventException();
         }
         List<Event> events = eventRepository.findByParticipants(user);
-        return events.stream().map(EventResponseDTOs::new).toList();
+        return events.stream().map(event -> new EventResponseDTOs(event, userService.getUserProfilePicLocation(event.getPromoter()))).toList();
     }
 
     private List<EventResponseDTOs> removeFullEvents(List<EventResponseDTOs> events) {

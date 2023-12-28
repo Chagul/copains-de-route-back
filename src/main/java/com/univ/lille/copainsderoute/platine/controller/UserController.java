@@ -76,7 +76,7 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
         String newToken = jwtUtil.createToken(user);
-        return ResponseEntity.ok(new ChangeLoginUserResponseDTO(new UserResponseDTOs(user, userService.userWithProfilePic(user.getId())), new LoginResponseDTO(newToken)));
+        return ResponseEntity.ok(new ChangeLoginUserResponseDTO(new UserResponseDTOs(user, userService.getUserProfilePicLocation(user)), new LoginResponseDTO(newToken)));
     }
 
     @DeleteMapping("me")

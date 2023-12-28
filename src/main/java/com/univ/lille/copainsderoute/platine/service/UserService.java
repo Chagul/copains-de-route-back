@@ -37,6 +37,9 @@ public class UserService {
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
 
+    private static final String USER_PATH = "/users/";
+    private static final String PROFILE_PIC_PATH = "/profilePic";
+
     public List<UserResponseDTOs> getUsers() throws ZeroUserFoundException {
         List<User> users = userRepository.findAll();
         if(users.isEmpty()) {
@@ -44,7 +47,7 @@ public class UserService {
         }
         List<UserResponseDTOs> userResponseDTOs = new ArrayList<>();
         for (User user : users) {
-           UserResponseDTOs userResponseDTO = new UserResponseDTOs(user, userWithProfilePic(user.getId()));
+           UserResponseDTOs userResponseDTO = new UserResponseDTOs(user, getUserProfilePicLocation(user));
            userResponseDTOs.add(userResponseDTO);
         }
         return userResponseDTOs;
@@ -65,7 +68,7 @@ public class UserService {
 
     public UserResponseDTOs getUserByLogin(String login) throws UserNotFoundException {
         User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
-        return new UserResponseDTOs(user, userWithProfilePic(user.getId()));
+        return new UserResponseDTOs(user, getUserProfilePicLocation(user));
     }
 
     public User updateUser(String loginChange, String userLogin) throws UserNotFoundException {
@@ -103,12 +106,19 @@ public class UserService {
         }
     }
 
-    public boolean userWithProfilePic(int userId) {
+    private boolean userWithProfilePic(int userId) {
         try {
             findUserProfilePic(userId);
         } catch (UserWithNoProfilePicException | ProfilePicNotFoundException e) {
             return false;
         }
         return true;
+    }
+
+    public String getUserProfilePicLocation(User user) {
+        if(userWithProfilePic(user.getId())) {
+            return USER_PATH.concat(String.valueOf(user.getId())).concat(PROFILE_PIC_PATH);
+        }
+        return null;
     }
 }
