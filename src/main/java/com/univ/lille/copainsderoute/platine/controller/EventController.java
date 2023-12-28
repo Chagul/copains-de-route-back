@@ -1,6 +1,7 @@
 package com.univ.lille.copainsderoute.platine.controller;
 
 import com.univ.lille.copainsderoute.platine.authent.JwtUtil;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.FilterEventRequestDto;
 import com.univ.lille.copainsderoute.platine.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.Response;
@@ -160,4 +161,19 @@ public class EventController {
         }
         return ResponseEntity.ok(events);
     }
+
+    @PostMapping("eventsByFilter")
+    public ResponseEntity<List<EventResponseDTOs>> getEventsByFilters(HttpServletRequest request, @RequestBody FilterEventRequestDto filterEventRequestDto){
+        List<EventResponseDTOs> events = null;
+        try {
+            events = eventService.getEventsByFilters(filterEventRequestDto, jwtUtil.getLogin(request));
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (ZeroEventFoundException e) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+
+        return ResponseEntity.ok(events);
+    }
+
 }
