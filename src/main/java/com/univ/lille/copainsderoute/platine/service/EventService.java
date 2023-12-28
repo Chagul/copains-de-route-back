@@ -229,6 +229,6 @@ public class EventService {
         if(eventsFilteredVisibility.isEmpty()){
             throw new ZeroEventFoundException();
         }
-        return eventsFilteredVisibility.stream().map(EventResponseDTOs::new).toList();
+        return eventsFilteredVisibility.stream().map(event -> new EventResponseDTOs(event, userService.getUserProfilePicLocation(event.getPromoter()))).toList();
     }
 }
