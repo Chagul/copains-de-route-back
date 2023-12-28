@@ -1,5 +1,8 @@
 package com.univ.lille.copainsderoute.platine.service;
 
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.FilterEventRequestDto;
+import com.univ.lille.copainsderoute.platine.entity.Friends;
+import com.univ.lille.copainsderoute.platine.enums.Visibility;
 import com.univ.lille.copainsderoute.platine.exceptions.*;
 import com.univ.lille.copainsderoute.platine.repository.EventRepository;
 import com.univ.lille.copainsderoute.platine.repository.PointLatLngRepository;
@@ -201,5 +204,31 @@ public class EventService {
 
     private List<EventResponseDTOs> removeFullEvents(List<EventResponseDTOs> events) {
         return events.stream().filter(Predicate.not(EventResponseDTOs::isFull)).toList();
+    }
+
+    public List<EventResponseDTOs> getEventsByFilters(FilterEventRequestDto filterEventRequestDto, String login) throws UserNotFoundException, ZeroEventFoundException{
+        User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
+
+        List<Event> events = eventRepository.findByFilter(filterEventRequestDto.getStartDate(), filterEventRequestDto.getEndDate(), filterEventRequestDto.getDistanceMin(), filterEventRequestDto.getDistanceMax(), filterEventRequestDto.getVisibility(), filterEventRequestDto.getRoadTypes(), filterEventRequestDto.getBikeTypes());
+
+        List<Event> eventsFilteredVisibility = new ArrayList<>();
+        List<Friends> friends = user.getFriends();
+
+        for(Event e : events){
+            if(e.getVisibility() == Visibility.PUBLIC || e.getPromoter().getId() == user.getId()) {
+                eventsFilteredVisibility.add(e);
+            } else {
+                for (Friends friend : friends) {
+                    if (friend.getUser1().equals(e.getPromoter()) || friend.getUser2().equals(e.getPromoter())) {
+                        eventsFilteredVisibility.add(e);
+                    }
+                }
+            }
+        }
+
+        if(eventsFilteredVisibility.isEmpty()){
+            throw new ZeroEventFoundException();
+        }
+        return eventsFilteredVisibility.stream().map(EventResponseDTOs::new).toList();
     }
 }

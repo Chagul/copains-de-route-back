@@ -2,6 +2,8 @@ package com.univ.lille.copainsderoute.platine.entity;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -34,6 +36,8 @@ public class Comment {
     
     private Event event;
     private int likes;
+
+    private List<String> usersWhoLiked = new ArrayList<>();
 
     // TODO add image in comment (optional)
     
