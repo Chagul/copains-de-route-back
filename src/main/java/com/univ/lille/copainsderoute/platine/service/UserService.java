@@ -59,8 +59,8 @@ public class UserService {
         user = userRepository.save(user);
         if(StringUtils.hasText(userRequestDTO.getBase64ProfilePic())) {
             byte[] profilePicBytes = Base64.getDecoder().decode(userRequestDTO.getBase64ProfilePic());
-            Files.createDirectories(Paths.get(getProfilePicPath(user)));
-            Path destinationFile = Paths.get(getProfilePicPath(user), "profilePic" + userRequestDTO.getProfilePicFormat());
+            Files.createDirectories(Paths.get(getProfilePicPath(user.getId())));
+            Path destinationFile = Paths.get(getProfilePicPath(user.getId()), "profilePic" + userRequestDTO.getProfilePicFormat());
             Files.write(destinationFile, profilePicBytes);
         }
         return user;
@@ -86,10 +86,6 @@ public class UserService {
 
     public InputStreamResource getProfilePic(int userId) throws ProfilePicNotFoundException, FileNotFoundException, UserWithNoProfilePicException {
         return new InputStreamResource(new FileInputStream(findUserProfilePic(userId).toFile()));
-    }
-
-    private String getProfilePicPath(User user) {
-        return "./users/".concat(String.valueOf(user.getId()));
     }
 
     private String getProfilePicPath(int userId) {
