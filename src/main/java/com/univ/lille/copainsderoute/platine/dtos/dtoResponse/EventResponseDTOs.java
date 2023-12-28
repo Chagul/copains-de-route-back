@@ -1,5 +1,7 @@
 package com.univ.lille.copainsderoute.platine.dtos.dtoResponse;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.univ.lille.copainsderoute.platine.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -20,6 +22,9 @@ import com.univ.lille.copainsderoute.platine.enums.Visibility;
 @Data   
 @AllArgsConstructor
 public class EventResponseDTOs {
+
+    @JsonIgnore
+    UserService userService;
 
     private int id;
 
@@ -74,11 +79,11 @@ public class EventResponseDTOs {
             PointResponseDTOs pointResponseDTOs = new PointResponseDTOs(point);
             this.steps.add(pointResponseDTOs);
         }
-        
+
         for (User user : event.getParticipants()){
-            UserResponseDTOs userResponseDTOs = new UserResponseDTOs(user);
+            UserResponseDTOs userResponseDTOs = new UserResponseDTOs(user, userService.userWithProfilePic(user.getId()));
             this.participants.add(userResponseDTOs);
-    }
+        }
         
         for (Comment comment : event.getComments()){
             CommentResponseDTOs commentResponseDTOs = new CommentResponseDTOs(comment);

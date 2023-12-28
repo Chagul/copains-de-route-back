@@ -13,15 +13,19 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserResponseDTOs {
 
-       
-    public UserResponseDTOs(User user) {
+    private static final String USER_PATH = "/users/";
+    private static final String PROFILE_PIC_PATH = "/profilePic";
+
+    public UserResponseDTOs(User user, boolean withProfilePic) {
         this.login = user.getLogin();
         this.numberEventsParticipated = user.getNumberEventsParticipated();
         this.numberEventsCreated = user.getNumberEventsCreated();
         this.distanceTraveled = user.getDistanceTraveled();
-       // this.co2NotEmitted = user.getCo2NotEmitted();
+        this.co2NotEmitted = user.getCo2_not_emitted();
+        if(withProfilePic) {
+            this.profilePicLocation = USER_PATH.concat(String.valueOf(user.getId())).concat(PROFILE_PIC_PATH);
+        }
     }
-
 
     private String login;
 
@@ -32,6 +36,8 @@ public class UserResponseDTOs {
     private int distanceTraveled;
 
     private int co2NotEmitted;
+
+    private String profilePicLocation;
 
 //    private List <Friends> friends = new ArrayList<>();
 

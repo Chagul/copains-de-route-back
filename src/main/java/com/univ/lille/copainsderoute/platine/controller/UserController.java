@@ -8,6 +8,7 @@ import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.UserResponseDTOs;
 import com.univ.lille.copainsderoute.platine.entity.User;
 import com.univ.lille.copainsderoute.platine.exceptions.ProfilePicNotFoundException;
 import com.univ.lille.copainsderoute.platine.exceptions.UserNotFoundException;
+import com.univ.lille.copainsderoute.platine.exceptions.UserWithNoProfilePicException;
 import com.univ.lille.copainsderoute.platine.exceptions.ZeroUserFoundException;
 import com.univ.lille.copainsderoute.platine.service.UserService;
 
@@ -75,7 +76,7 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
         String newToken = jwtUtil.createToken(user);
-        return ResponseEntity.ok(new ChangeLoginUserResponseDTO(new UserResponseDTOs(user), new LoginResponseDTO(newToken)));
+        return ResponseEntity.ok(new ChangeLoginUserResponseDTO(new UserResponseDTOs(user, userService.userWithProfilePic(user.getId())), new LoginResponseDTO(newToken)));
     }
 
     @DeleteMapping("me")
@@ -89,7 +90,7 @@ public class UserController {
         InputStreamResource resource = null;
         try {
             resource = userService.getProfilePic(userId);
-        } catch (ProfilePicNotFoundException | FileNotFoundException e) {
+        } catch (ProfilePicNotFoundException | FileNotFoundException | UserWithNoProfilePicException e) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(resource);

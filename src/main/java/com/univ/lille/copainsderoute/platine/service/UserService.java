@@ -2,6 +2,7 @@ package com.univ.lille.copainsderoute.platine.service;
 
 import com.univ.lille.copainsderoute.platine.exceptions.ProfilePicNotFoundException;
 import com.univ.lille.copainsderoute.platine.exceptions.UserNotFoundException;
+import com.univ.lille.copainsderoute.platine.exceptions.UserWithNoProfilePicException;
 import com.univ.lille.copainsderoute.platine.exceptions.ZeroUserFoundException;
 import com.univ.lille.copainsderoute.platine.repository.UserRepository;
 import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.*;
@@ -43,7 +44,7 @@ public class UserService {
         }
         List<UserResponseDTOs> userResponseDTOs = new ArrayList<>();
         for (User user : users) {
-           UserResponseDTOs userResponseDTO = new UserResponseDTOs(user);
+           UserResponseDTOs userResponseDTO = new UserResponseDTOs(user, userWithProfilePic(user.getId()));
            userResponseDTOs.add(userResponseDTO);
         }
         return userResponseDTOs;
@@ -64,7 +65,7 @@ public class UserService {
 
     public UserResponseDTOs getUserByLogin(String login) throws UserNotFoundException {
         User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
-        return new UserResponseDTOs(user);
+        return new UserResponseDTOs(user, userWithProfilePic(user.getId()));
     }
 
     public User updateUser(String loginChange, String userLogin) throws UserNotFoundException {
@@ -80,7 +81,7 @@ public class UserService {
         userRepository.deleteByLogin(login);
     }
 
-    public InputStreamResource getProfilePic(int userId) throws ProfilePicNotFoundException, FileNotFoundException {
+    public InputStreamResource getProfilePic(int userId) throws ProfilePicNotFoundException, FileNotFoundException, UserWithNoProfilePicException {
         return new InputStreamResource(new FileInputStream(findUserProfilePic(userId).toFile()));
     }
 
@@ -92,13 +93,22 @@ public class UserService {
         return "./users/".concat(String.valueOf(userId));
     }
 
-    public Path findUserProfilePic(int id) throws ProfilePicNotFoundException {
+    private Path findUserProfilePic(int id) throws ProfilePicNotFoundException, UserWithNoProfilePicException {
         try (Stream<Path> stream = Files.list(Paths.get(getProfilePicPath(id)))) {
             return stream
                     .filter(file -> !Files.isDirectory(file))
                     .findFirst().orElseThrow(ProfilePicNotFoundException::new);
         } catch (IOException e) {
-            return null;
+            throw new UserWithNoProfilePicException();
         }
+    }
+
+    public boolean userWithProfilePic(int userId) {
+        try {
+            findUserProfilePic(userId);
+        } catch (UserWithNoProfilePicException | ProfilePicNotFoundException e) {
+            return false;
+        }
+        return true;
     }
 }
