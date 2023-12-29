@@ -21,12 +21,12 @@ public class Friends {
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "user_1_id", nullable = false)
-    private User user1; //l'id de l'utilisateur qui a envoyé la demande
+    @JoinColumn(name = "sender_id", nullable = false)
+    private User sender;
 
     @ManyToOne
-    @JoinColumn(name = "user_2_id", nullable = false)
-    private User user2; //l'id de l'utilisateur qui a reçu la demande
+    @JoinColumn(name = "added_id", nullable = false)
+    private User added;
 
     @Column(name = "submission_time")
     private LocalDateTime submissionTime;

@@ -219,7 +219,7 @@ public class EventService {
                 eventsFilteredVisibility.add(e);
             } else {
                 for (Friends friend : friends) {
-                    if (friend.getUser1().equals(e.getPromoter()) || friend.getUser2().equals(e.getPromoter())) {
+                    if (friend.getSender().equals(e.getPromoter()) || friend.getAdded().equals(e.getPromoter())) {
                         eventsFilteredVisibility.add(e);
                     }
                 }

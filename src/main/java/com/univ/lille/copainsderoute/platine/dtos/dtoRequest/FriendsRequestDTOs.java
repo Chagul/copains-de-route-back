@@ -6,9 +6,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class FriendsRequestDTOs {
-    
-    private String loginUser1;
-    
-    private String loginUser2;
-    
+    private String loginNewFriend;
 }
