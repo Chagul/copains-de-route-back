@@ -49,8 +49,8 @@ public class User {
     @Column(name = "co2_not_emitted")
     private int co2_not_emitted;
 
-    @OneToMany(mappedBy = "user1")
-    private List <Friends> friends = new ArrayList<>();
+    @OneToMany(mappedBy = "sender")
+    private List<Friends> friends = new ArrayList<>();
 
     @ManyToMany(mappedBy = "participants")
     @JsonIgnore
