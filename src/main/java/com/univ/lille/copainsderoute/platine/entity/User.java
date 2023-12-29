@@ -50,13 +50,14 @@ public class User {
     private int co2_not_emitted;
 
     @OneToMany(mappedBy = "sender")
-    private List<Friends> friends = new ArrayList<>();
+    private List<Friends> sentFriends = new ArrayList<>();
+
+    @OneToMany(mappedBy = "added")
+    private List<Friends> addedFriends = new ArrayList<>();
 
     @ManyToMany(mappedBy = "participants")
     @JsonIgnore
     private List<Event> participatedEvent = new ArrayList<>();
-
-    // TODO add profile image
 
     public static User getUserFromDTO(UserRegisterRequestDTOs userRequestDTO) {
         User user = new User();

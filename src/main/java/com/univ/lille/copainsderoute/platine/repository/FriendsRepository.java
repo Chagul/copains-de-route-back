@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface FriendsRepository extends JpaRepository<Friends, Integer> {
 
-    @Query("SELECT f FROM Friends f WHERE f.sender = :requester OR f.added = :requester AND f.status = 'SENT'")
+    @Query("SELECT f FROM Friends f WHERE f.sender = :requester OR f.added = :requester")
     Optional<List<Friends>> findBySenderOrAdded(@Param("requester") User requester);
 
     Optional<Friends> findBySenderAndAdded(User sender, User added);

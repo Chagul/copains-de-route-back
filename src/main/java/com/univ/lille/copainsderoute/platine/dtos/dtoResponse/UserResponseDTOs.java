@@ -20,6 +20,8 @@ public class UserResponseDTOs {
         this.distanceTraveled = user.getDistanceTraveled();
         this.co2NotEmitted = user.getCo2_not_emitted();
         this.profilePicLocation = profilePicLocation;
+        this.sentFriends = user.getSentFriends().stream().map(FriendsRequestResponseDTO::new).toList();
+        this.addedFriends = user.getAddedFriends().stream().map(FriendsRequestResponseDTO::new).toList();
     }
 
     private String login;
@@ -34,7 +36,9 @@ public class UserResponseDTOs {
 
     private String profilePicLocation;
 
-//    private List <Friends> friends = new ArrayList<>();
+    private List<FriendsRequestResponseDTO> sentFriends;
+
+    private List<FriendsRequestResponseDTO> addedFriends;
 
 }
 

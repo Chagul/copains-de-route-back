@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @Service
 @AllArgsConstructor
@@ -212,7 +213,7 @@ public class EventService {
         List<Event> events = eventRepository.findByFilter(filterEventRequestDto.getStartDate(), filterEventRequestDto.getEndDate(), filterEventRequestDto.getDistanceMin(), filterEventRequestDto.getDistanceMax(), filterEventRequestDto.getVisibility(), filterEventRequestDto.getRoadTypes(), filterEventRequestDto.getBikeTypes());
 
         List<Event> eventsFilteredVisibility = new ArrayList<>();
-        List<Friends> friends = user.getFriends();
+        List<Friends> friends = Stream.concat(user.getSentFriends().stream(), user.getAddedFriends().stream()).toList();
 
         for(Event e : events){
             if(e.getVisibility() == Visibility.PUBLIC || e.getPromoter().getId() == user.getId()) {
