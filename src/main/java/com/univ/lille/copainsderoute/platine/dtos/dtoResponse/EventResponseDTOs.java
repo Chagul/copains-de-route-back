@@ -60,7 +60,7 @@ public class EventResponseDTOs {
 
 
 
-    public EventResponseDTOs(Event event, String promoterProfilePicLocation) {
+    public EventResponseDTOs(Event event, String promoterProfilePicLocation, List<UserResponseDTOs> participants) {
         this.id = event.getId();
         this.name = event.getName();
         this.description = event.getDescription();
@@ -75,16 +75,11 @@ public class EventResponseDTOs {
         this.roadType3 = event.getRoadType3();
         this.bikeType1 = event.getBikeType1();
         this.bikeType2 = event.getBikeType2();
-
+        this.participants = participants;
         
         for (PointLatLng point : event.getSteps()){
             PointResponseDTOs pointResponseDTOs = new PointResponseDTOs(point);
             this.steps.add(pointResponseDTOs);
-        }
-
-        for (User user : event.getParticipants()){
-            UserResponseDTOs userResponseDTOs = new UserResponseDTOs(user, userService.getUserProfilePicLocation(user));
-            this.participants.add(userResponseDTOs);
         }
         
         for (Comment comment : event.getComments()){
