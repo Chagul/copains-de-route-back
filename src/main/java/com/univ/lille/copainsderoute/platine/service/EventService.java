@@ -1,6 +1,7 @@
 package com.univ.lille.copainsderoute.platine.service;
 
 import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.FilterEventRequestDto;
+import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.UserResponseDTOs;
 import com.univ.lille.copainsderoute.platine.entity.Friends;
 import com.univ.lille.copainsderoute.platine.enums.Visibility;
 import com.univ.lille.copainsderoute.platine.exceptions.*;
@@ -48,13 +49,22 @@ public class EventService {
         if(events.isEmpty()) {
             throw new ZeroEventFoundException();
         }
-        
+
+        return eventresponseDtoFromEvent(events);
+
+    }
+
+    private List<EventResponseDTOs> eventresponseDtoFromEvent(List<Event> events) {
         List<EventResponseDTOs> eventResponseDTOs = new ArrayList<>();
         for (Event event : events) {
-            eventResponseDTOs.add(new EventResponseDTOs(event, userService.getUserProfilePicLocation(event.getPromoter())));
+            List<UserResponseDTOs> participants = new ArrayList<>();
+            for (User user : event.getParticipants()){
+                UserResponseDTOs userResponseDTOs = new UserResponseDTOs(user, userService.getUserProfilePicLocation(user));
+                participants.add(userResponseDTOs);
+            }
+            eventResponseDTOs.add(new EventResponseDTOs(event, userService.getUserProfilePicLocation(event.getPromoter()), participants));
         }
         return eventResponseDTOs;
-
     }
 
     public int createEvent(EventRequestDTOs eventRequestDTO, String login) throws UserNotFoundException {
@@ -105,7 +115,12 @@ public class EventService {
 
     public EventResponseDTOs getEvent(int id) throws EventNotfoundException {
         Event evt = eventRepository.findById(id).orElseThrow(EventNotfoundException::new);
-        return new EventResponseDTOs(evt, userService.getUserProfilePicLocation(evt.getPromoter()));
+            List<UserResponseDTOs> participants = new ArrayList<>();
+            for (User user : evt.getParticipants()) {
+                UserResponseDTOs userResponseDTOs = new UserResponseDTOs(user, userService.getUserProfilePicLocation(user));
+                participants.add(userResponseDTOs);
+            }
+        return new EventResponseDTOs(evt, userService.getUserProfilePicLocation(evt.getPromoter()),participants);
     }
 
     public List<EventResponseDTOs> getEventsByLocation(GpsCoordinatesDTOs gpsCoordinatesDTOs) throws ZeroEventFoundException, EventNotfoundException {
@@ -122,8 +137,8 @@ public class EventService {
                 eventsByLocation.add(event);
             }
         }
-        List<EventResponseDTOs> eventResp = eventsByLocation.stream().map(event -> new EventResponseDTOs(event, userService.getUserProfilePicLocation(event.getPromoter()))).toList();
-        return removeFullEvents(eventResp);
+
+        return removeFullEvents(eventresponseDtoFromEvent(eventsByLocation));
     }
 
     private boolean isInside(GpsCoordinatesDTOs gpsCoordinatesDTOs, Double latitude, Double longitude) {
@@ -189,7 +204,7 @@ public class EventService {
         User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
 
         List<Event> events = eventRepository.findByPromoter(user);
-        return events.stream().map(event -> new EventResponseDTOs(event, userService.getUserProfilePicLocation(event.getPromoter()))).toList();
+        return eventresponseDtoFromEvent(events);
     }
 
     public List<EventResponseDTOs> getEventsByUserParticipated(String login) throws UserNotFoundException, UserNotParticipatingToAnyEventException {
@@ -199,7 +214,7 @@ public class EventService {
             throw new UserNotParticipatingToAnyEventException();
         }
         List<Event> events = user.getParticipatedEvent();
-        return events.stream().map(event -> new EventResponseDTOs(event, userService.getUserProfilePicLocation(event.getPromoter()))).toList();
+        return eventresponseDtoFromEvent(events);
     }
 
     private List<EventResponseDTOs> removeFullEvents(List<EventResponseDTOs> events) {
@@ -229,6 +244,6 @@ public class EventService {
         if(eventsFilteredVisibility.isEmpty()){
             throw new ZeroEventFoundException();
         }
-        return eventsFilteredVisibility.stream().map(event -> new EventResponseDTOs(event, userService.getUserProfilePicLocation(event.getPromoter()))).toList();
+        return eventresponseDtoFromEvent(eventsFilteredVisibility);
     }
 }
