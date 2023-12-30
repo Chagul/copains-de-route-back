@@ -53,7 +53,7 @@ public class EventService {
             throw new ZeroEventFoundException();
         }
 
-        return eventResponseDtoFromEvent(filterEventWithVisibility(user, events));
+        return removeFullEvents(eventResponseDtoFromEvent(filterEventWithVisibility(user, events)));
 
     }
 
