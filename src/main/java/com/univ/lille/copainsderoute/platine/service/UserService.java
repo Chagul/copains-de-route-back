@@ -1,5 +1,7 @@
 package com.univ.lille.copainsderoute.platine.service;
 
+import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.FriendsRequestResponseDTO;
+import com.univ.lille.copainsderoute.platine.entity.Friends;
 import com.univ.lille.copainsderoute.platine.exceptions.ProfilePicNotFoundException;
 import com.univ.lille.copainsderoute.platine.exceptions.UserNotFoundException;
 import com.univ.lille.copainsderoute.platine.exceptions.UserWithNoProfilePicException;
@@ -47,7 +49,8 @@ public class UserService {
         }
         List<UserResponseDTOs> userResponseDTOs = new ArrayList<>();
         for (User user : users) {
-           UserResponseDTOs userResponseDTO = new UserResponseDTOs(user, getUserProfilePicLocation(user));
+           UserResponseDTOs userResponseDTO = new UserResponseDTOs(user, getUserProfilePicLocation(user),
+                   createFriendList(user.getSentFriends()), createFriendList(user.getAddedFriends()));
            userResponseDTOs.add(userResponseDTO);
         }
         return userResponseDTOs;
@@ -68,7 +71,8 @@ public class UserService {
 
     public UserResponseDTOs getUserByLogin(String login) throws UserNotFoundException {
         User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
-        return new UserResponseDTOs(user, getUserProfilePicLocation(user));
+        return new UserResponseDTOs(user, getUserProfilePicLocation(user),
+                createFriendList(user.getSentFriends()), createFriendList(user.getAddedFriends()));
     }
 
     public User updateUser(String loginChange, String userLogin) throws UserNotFoundException {
@@ -116,5 +120,9 @@ public class UserService {
             return USER_PATH.concat(String.valueOf(user.getId())).concat(PROFILE_PIC_PATH);
         }
         return null;
+    }
+
+    public List<FriendsRequestResponseDTO> createFriendList(List<Friends> friends) {
+        return friends.stream().map(f -> new FriendsRequestResponseDTO(f, getUserProfilePicLocation(f.getSender()), getUserProfilePicLocation(f.getAdded()))).toList();
     }
 }

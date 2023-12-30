@@ -76,7 +76,8 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
         String newToken = jwtUtil.createToken(user);
-        return ResponseEntity.ok(new ChangeLoginUserResponseDTO(new UserResponseDTOs(user, userService.getUserProfilePicLocation(user)), new LoginResponseDTO(newToken)));
+        return ResponseEntity.ok(new ChangeLoginUserResponseDTO(new UserResponseDTOs(user, userService.getUserProfilePicLocation(user),
+                userService.createFriendList(user.getSentFriends()), userService.createFriendList(user.getAddedFriends())), new LoginResponseDTO(newToken)));
     }
 
     @DeleteMapping("me")

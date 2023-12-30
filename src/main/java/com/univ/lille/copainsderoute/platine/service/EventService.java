@@ -28,7 +28,6 @@ import com.univ.lille.copainsderoute.platine.entity.User;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -60,7 +59,8 @@ public class EventService {
         for (Event event : events) {
             List<UserResponseDTOs> participants = new ArrayList<>();
             for (User user : event.getParticipants()){
-                UserResponseDTOs userResponseDTOs = new UserResponseDTOs(user, userService.getUserProfilePicLocation(user));
+                UserResponseDTOs userResponseDTOs = new UserResponseDTOs(user, userService.getUserProfilePicLocation(user),
+                        userService.createFriendList(user.getSentFriends()), userService.createFriendList(user.getAddedFriends()));
                 participants.add(userResponseDTOs);
             }
             eventResponseDTOs.add(new EventResponseDTOs(event, userService.getUserProfilePicLocation(event.getPromoter()), participants));
@@ -118,7 +118,8 @@ public class EventService {
         Event evt = eventRepository.findById(id).orElseThrow(EventNotfoundException::new);
             List<UserResponseDTOs> participants = new ArrayList<>();
             for (User user : evt.getParticipants()) {
-                UserResponseDTOs userResponseDTOs = new UserResponseDTOs(user, userService.getUserProfilePicLocation(user));
+                UserResponseDTOs userResponseDTOs = new UserResponseDTOs(user, userService.getUserProfilePicLocation(user),
+                        userService.createFriendList(user.getSentFriends()), userService.createFriendList(user.getAddedFriends()));
                 participants.add(userResponseDTOs);
             }
         return new EventResponseDTOs(evt, userService.getUserProfilePicLocation(evt.getPromoter()),participants);

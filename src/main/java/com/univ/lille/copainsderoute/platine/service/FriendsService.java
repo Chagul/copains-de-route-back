@@ -23,6 +23,7 @@ public class FriendsService {
 
     private FriendsRepository friendsRepository;
     private UserRepository userRepository;
+    private UserService userService;
 
     public void sendFriendRequest(FriendsRequestDTOs friendsRequestDTOs, String login) throws UserNotFoundException, FriendRequestAlreadyExistsException, UserCannotAddHimselfAsFriendException {
         User userSending = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
@@ -49,7 +50,8 @@ public class FriendsService {
     public List<FriendsRequestResponseDTO> getFriendRequests(String login) throws UserNotFoundException, NoFriendRequestsException {
         User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
         List<Friends> friendRequests = friendsRepository.findBySenderOrAdded(user).orElseThrow(NoFriendRequestsException::new);
-        return friendRequests.stream().map(FriendsRequestResponseDTO::new).toList();
+        return friendRequests.stream().map(f -> new FriendsRequestResponseDTO(f, userService.getUserProfilePicLocation(f.getSender()),
+                userService.getUserProfilePicLocation(f.getAdded()))).toList();
     }
 
     public void acceptFriendRequest(int id, String login) throws UserNotFoundException, FriendRequestNotFound, UserCanOnlyAcceptHisFriendRequestException, FriendRequestIsNotInStatusSentException {

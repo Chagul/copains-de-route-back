@@ -13,15 +13,15 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserResponseDTOs {
 
-    public UserResponseDTOs(User user, String profilePicLocation) {
+    public UserResponseDTOs(User user, String profilePicLocation, List<FriendsRequestResponseDTO> sentFriends, List<FriendsRequestResponseDTO> addedFriends) {
         this.login = user.getLogin();
         this.numberEventsParticipated = user.getNumberEventsParticipated();
         this.numberEventsCreated = user.getNumberEventsCreated();
         this.distanceTraveled = user.getDistanceTraveled();
         this.co2NotEmitted = user.getCo2_not_emitted();
         this.profilePicLocation = profilePicLocation;
-        this.sentFriends = user.getSentFriends().stream().map(FriendsRequestResponseDTO::new).toList();
-        this.addedFriends = user.getAddedFriends().stream().map(FriendsRequestResponseDTO::new).toList();
+        this.sentFriends = sentFriends;
+        this.addedFriends = addedFriends;
     }
 
     private String login;
