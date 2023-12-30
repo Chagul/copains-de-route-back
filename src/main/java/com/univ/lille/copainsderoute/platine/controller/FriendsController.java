@@ -31,7 +31,7 @@ public class FriendsController {
             friendsService.sendFriendRequest(friendsRequestDTOs, jwtUtil.getLogin(request));
         } catch (UserNotFoundException e) {
             return ResponseEntity.notFound().build();
-        } catch (FriendRequestAlreadyExistsException e) {
+        } catch (FriendRequestAlreadyExistsException | UserCannotAddHimselfAsFriendException e) {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok().build();

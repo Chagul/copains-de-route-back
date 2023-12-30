@@ -24,9 +24,13 @@ public class FriendsService {
     private FriendsRepository friendsRepository;
     private UserRepository userRepository;
 
-    public void sendFriendRequest(FriendsRequestDTOs friendsRequestDTOs, String login) throws UserNotFoundException, FriendRequestAlreadyExistsException {
+    public void sendFriendRequest(FriendsRequestDTOs friendsRequestDTOs, String login) throws UserNotFoundException, FriendRequestAlreadyExistsException, UserCannotAddHimselfAsFriendException {
         User userSending = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
         User userToAdd = userRepository.findByLogin(friendsRequestDTOs.getLoginNewFriend()).orElseThrow(UserNotFoundException::new);
+
+        if(userSending.equals(userToAdd)) {
+            throw new UserCannotAddHimselfAsFriendException();
+        }
 
         Optional<Friends> existingFriendRequestSenderToAdded = friendsRepository.findBySenderAndAdded(userSending, userToAdd);
         Optional<Friends> existingFriendRequestAddedToSender = friendsRepository.findBySenderAndAdded(userToAdd, userSending);
