@@ -95,7 +95,7 @@ public class EventController {
     }
     
 
-    @GetMapping("location")
+    @PostMapping("location")
     public ResponseEntity<List<EventResponseDTOs>> getEventsByLocation(@RequestBody GpsCoordinatesDTOs gpsCoordinatesDTO) {
         List<EventResponseDTOs> itinerary = null;
         try {

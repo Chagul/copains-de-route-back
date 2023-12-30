@@ -28,7 +28,6 @@ import com.univ.lille.copainsderoute.platine.entity.User;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 @Service
@@ -45,16 +44,16 @@ public class EventService {
      * @return
      */
     public List<EventResponseDTOs> getEvents() throws ZeroEventFoundException {
-        List<Event> events = eventRepository.findAll();
+        List<Event> events = eventRepository.findByStartDateGreaterThanEqual(LocalDate.now());
         if(events.isEmpty()) {
             throw new ZeroEventFoundException();
         }
 
-        return eventresponseDtoFromEvent(events);
+        return eventResponseDtoFromEvent(events);
 
     }
 
-    private List<EventResponseDTOs> eventresponseDtoFromEvent(List<Event> events) {
+    private List<EventResponseDTOs> eventResponseDtoFromEvent(List<Event> events) {
         List<EventResponseDTOs> eventResponseDTOs = new ArrayList<>();
         for (Event event : events) {
             List<UserResponseDTOs> participants = new ArrayList<>();
@@ -124,7 +123,7 @@ public class EventService {
     }
 
     public List<EventResponseDTOs> getEventsByLocation(GpsCoordinatesDTOs gpsCoordinatesDTOs) throws ZeroEventFoundException, EventNotfoundException {
-        List<Event> events = eventRepository.findByStartDate(LocalDate.now());
+        List<Event> events = eventRepository.findByStartDateGreaterThanEqual(LocalDate.now());
         List<Event> eventsByLocation = new ArrayList<>();
 
         if (events.isEmpty()) {
@@ -138,7 +137,7 @@ public class EventService {
             }
         }
 
-        return removeFullEvents(eventresponseDtoFromEvent(eventsByLocation));
+        return removeFullEvents(eventResponseDtoFromEvent(eventsByLocation));
     }
 
     private boolean isInside(GpsCoordinatesDTOs gpsCoordinatesDTOs, Double latitude, Double longitude) {
@@ -204,7 +203,7 @@ public class EventService {
         User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
 
         List<Event> events = eventRepository.findByPromoter(user);
-        return eventresponseDtoFromEvent(events);
+        return eventResponseDtoFromEvent(events);
     }
 
     public List<EventResponseDTOs> getEventsByUserParticipated(String login) throws UserNotFoundException, UserNotParticipatingToAnyEventException {
@@ -214,7 +213,7 @@ public class EventService {
             throw new UserNotParticipatingToAnyEventException();
         }
         List<Event> events = user.getParticipatedEvent();
-        return eventresponseDtoFromEvent(events);
+        return eventResponseDtoFromEvent(events);
     }
 
     private List<EventResponseDTOs> removeFullEvents(List<EventResponseDTOs> events) {
@@ -244,6 +243,6 @@ public class EventService {
         if(eventsFilteredVisibility.isEmpty()){
             throw new ZeroEventFoundException();
         }
-        return eventresponseDtoFromEvent(eventsFilteredVisibility);
+        return eventResponseDtoFromEvent(eventsFilteredVisibility);
     }
 }
