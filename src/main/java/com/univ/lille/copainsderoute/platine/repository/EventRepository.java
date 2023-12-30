@@ -20,9 +20,6 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     // find events of today or after
     public List<Event> findByStartDateGreaterThanEqual(LocalDate date);
 
-    // find events of today or 
-    public List<Event> findByStartDate(LocalDate date);
-
     public List<Event> findByPromoter(User promoter);
 
     @Query(value = "SELECT e FROM Event e WHERE e.startDate BETWEEN :startDate and :endDate AND e.distance BETWEEN :minDistance AND :maxDistance AND (e.bikeType1 in :bikeTypes or e.bikeType2 in :bikeTypes) AND e.visibility in :visibility AND (e.roadType1 in :roadTypes OR e.roadType2 in :roadTypes OR e.roadType3 in :roadTypes)")
