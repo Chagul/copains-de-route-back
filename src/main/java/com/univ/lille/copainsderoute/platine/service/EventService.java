@@ -3,6 +3,7 @@ package com.univ.lille.copainsderoute.platine.service;
 import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.FilterEventRequestDto;
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.UserResponseDTOs;
 import com.univ.lille.copainsderoute.platine.entity.Friends;
+import com.univ.lille.copainsderoute.platine.enums.FriendRequestStatus;
 import com.univ.lille.copainsderoute.platine.enums.Visibility;
 import com.univ.lille.copainsderoute.platine.exceptions.*;
 import com.univ.lille.copainsderoute.platine.repository.EventRepository;
@@ -157,7 +158,7 @@ public class EventService {
                 eventsFilteredByVisibility.add(e);
             } else {
                 for (Friends friend : friends) {
-                    if (friend.getSender().equals(e.getPromoter()) || friend.getAdded().equals(e.getPromoter())) {
+                    if ((friend.getSender().equals(e.getPromoter()) || friend.getAdded().equals(e.getPromoter()) && friend.getStatus().equals(FriendRequestStatus.ACCEPTED))) {
                         eventsFilteredByVisibility.add(e);
                     }
                 }
