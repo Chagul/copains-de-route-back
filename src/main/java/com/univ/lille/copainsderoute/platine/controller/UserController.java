@@ -67,6 +67,17 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @GetMapping("{login}")
+    public ResponseEntity<UserResponseDTOs> getUserByLogin(@PathVariable("login") String login) throws RuntimeException{
+        UserResponseDTOs user = null;
+        try {
+            user = userService.getUserByLogin(login);
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(user);
+    }
+
     @PatchMapping("me")
     public ResponseEntity<ChangeLoginUserResponseDTO> updateUser(HttpServletRequest request, @RequestParam(value = "login", required = true) String newLogin) throws RuntimeException{
         User user = null;
