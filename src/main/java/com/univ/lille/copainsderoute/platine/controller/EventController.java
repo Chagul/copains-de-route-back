@@ -37,12 +37,14 @@ public class EventController {
     private final JwtUtil jwtUtil;
 
     @GetMapping("")
-    public ResponseEntity<List<EventResponseDTOs>> getEvents() {
+    public ResponseEntity<List<EventResponseDTOs>> getEvents(HttpServletRequest request) {
         List<EventResponseDTOs> events = null;
         try {
-            events = eventService.getEvents();
+            events = eventService.getEvents(jwtUtil.getLogin(request));
         } catch (ZeroEventFoundException e) {
             return ResponseEntity.noContent().build();
+        } catch (UserNotFoundException e){
+            return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(events);
     }
@@ -95,13 +97,16 @@ public class EventController {
     }
     
 
-    @GetMapping("location")
-    public ResponseEntity<List<EventResponseDTOs>> getEventsByLocation(@RequestBody GpsCoordinatesDTOs gpsCoordinatesDTO) {
+    @PostMapping("location")
+    public ResponseEntity<List<EventResponseDTOs>> getEventsByLocation(HttpServletRequest request, @RequestBody GpsCoordinatesDTOs gpsCoordinatesDTO) {
         List<EventResponseDTOs> itinerary = null;
         try {
-            itinerary = eventService.getEventsByLocation(gpsCoordinatesDTO);
+
+            itinerary = eventService.getEventsByLocation(gpsCoordinatesDTO, jwtUtil.getLogin(request));
         } catch (ZeroEventFoundException | EventNotfoundException e) {
             return ResponseEntity.noContent().build();
+        } catch (UserNotFoundException e) {
+           return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(itinerary);
     }
