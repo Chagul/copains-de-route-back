@@ -43,13 +43,15 @@ public class EventService {
      * get all events
      * @return
      */
-    public List<EventResponseDTOs> getEvents() throws ZeroEventFoundException {
+    public List<EventResponseDTOs> getEvents(String login) throws ZeroEventFoundException, UserNotFoundException {
+        User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
+
         List<Event> events = eventRepository.findByStartDateGreaterThanEqual(LocalDate.now());
         if(events.isEmpty()) {
             throw new ZeroEventFoundException();
         }
 
-        return eventResponseDtoFromEvent(events);
+        return eventResponseDtoFromEvent(filterEventWithVisibility(user, events));
 
     }
 
@@ -122,7 +124,9 @@ public class EventService {
         return new EventResponseDTOs(evt, userService.getUserProfilePicLocation(evt.getPromoter()),participants);
     }
 
-    public List<EventResponseDTOs> getEventsByLocation(GpsCoordinatesDTOs gpsCoordinatesDTOs) throws ZeroEventFoundException, EventNotfoundException {
+    public List<EventResponseDTOs> getEventsByLocation(GpsCoordinatesDTOs gpsCoordinatesDTOs, String login) throws ZeroEventFoundException, EventNotfoundException, UserNotFoundException {
+        User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
+
         List<Event> events = eventRepository.findByStartDateGreaterThanEqual(LocalDate.now());
         List<Event> eventsByLocation = new ArrayList<>();
 
@@ -136,8 +140,28 @@ public class EventService {
                 eventsByLocation.add(event);
             }
         }
+        filterEventWithVisibility(user, events);
 
-        return removeFullEvents(eventResponseDtoFromEvent(eventsByLocation));
+        return removeFullEvents(eventResponseDtoFromEvent(filterEventWithVisibility(user, eventsByLocation)));
+    }
+
+    private List<Event> filterEventWithVisibility(User user, List<Event> events) {
+        List<Event> eventsFilteredByVisibility = new ArrayList<>();
+
+        List<Friends> friends = user.getFriends();
+        for (Event e : events) {
+            if (e.getVisibility() == Visibility.PUBLIC || e.getPromoter().getId() == user.getId()) {
+                eventsFilteredByVisibility.add(e);
+            } else {
+                for (Friends friend : friends) {
+                    if (friend.getUser1().equals(e.getPromoter()) || friend.getUser2().equals(e.getPromoter())) {
+                        eventsFilteredByVisibility.add(e);
+                    }
+                }
+            }
+        }
+
+        return eventsFilteredByVisibility;
     }
 
     private boolean isInside(GpsCoordinatesDTOs gpsCoordinatesDTOs, Double latitude, Double longitude) {
@@ -225,20 +249,7 @@ public class EventService {
 
         List<Event> events = eventRepository.findByFilter(filterEventRequestDto.getStartDate(), filterEventRequestDto.getEndDate(), filterEventRequestDto.getDistanceMin(), filterEventRequestDto.getDistanceMax(), filterEventRequestDto.getVisibility(), filterEventRequestDto.getRoadTypes(), filterEventRequestDto.getBikeTypes());
 
-        List<Event> eventsFilteredVisibility = new ArrayList<>();
-        List<Friends> friends = user.getFriends();
-
-        for(Event e : events){
-            if(e.getVisibility() == Visibility.PUBLIC || e.getPromoter().getId() == user.getId()) {
-                eventsFilteredVisibility.add(e);
-            } else {
-                for (Friends friend : friends) {
-                    if (friend.getUser1().equals(e.getPromoter()) || friend.getUser2().equals(e.getPromoter())) {
-                        eventsFilteredVisibility.add(e);
-                    }
-                }
-            }
-        }
+        List<Event> eventsFilteredVisibility = filterEventWithVisibility(user, events);
 
         if(eventsFilteredVisibility.isEmpty()){
             throw new ZeroEventFoundException();
