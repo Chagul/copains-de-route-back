@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/users/{id}/profilePic").permitAll()
                 .requestMatchers("users/reset-password").permitAll()
+                .requestMatchers("users/sendEmail/{email}").permitAll()
                 .anyRequest().authenticated());
         http.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);

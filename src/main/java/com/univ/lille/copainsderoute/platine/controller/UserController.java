@@ -46,7 +46,7 @@ public class UserController {
     private final JwtUtil jwtUtil;
 
     @GetMapping("")
-    public ResponseEntity<List<UserResponseDTOs>> getUsers() throws RuntimeException{
+    public ResponseEntity<List<UserResponseDTOs>> getUsers() throws RuntimeException {
         List<UserResponseDTOs> users = null;
         try {
             users = userService.getUsers();
@@ -58,7 +58,7 @@ public class UserController {
     }
 
     @GetMapping("me")
-    public ResponseEntity<UserResponseDTOs> getUser(HttpServletRequest request) throws RuntimeException{
+    public ResponseEntity<UserResponseDTOs> getUser(HttpServletRequest request) throws RuntimeException {
         UserResponseDTOs user = null;
         try {
             user = userService.getUserByLogin(jwtUtil.getLogin(request));
@@ -69,7 +69,8 @@ public class UserController {
     }
 
     @GetMapping("{login}")
-    public ResponseEntity<UserResponseDTOs> getUserByLogin(@PathVariable("login") String login) throws RuntimeException{
+    public ResponseEntity<UserResponseDTOs> getUserByLogin(@PathVariable("login") String login)
+            throws RuntimeException {
         UserResponseDTOs user = null;
         try {
             user = userService.getUserByLogin(login);
@@ -80,7 +81,8 @@ public class UserController {
     }
 
     @PatchMapping("me")
-    public ResponseEntity<ChangeLoginUserResponseDTO> updateUser(HttpServletRequest request, @RequestParam(value = "login", required = true) String newLogin) throws RuntimeException{
+    public ResponseEntity<ChangeLoginUserResponseDTO> updateUser(HttpServletRequest request,
+            @RequestParam(value = "login", required = true) String newLogin) throws RuntimeException {
         User user = null;
         try {
             user = userService.updateUser(newLogin, jwtUtil.getLogin(request));
@@ -88,12 +90,14 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
         String newToken = jwtUtil.createToken(user);
-        return ResponseEntity.ok(new ChangeLoginUserResponseDTO(new UserResponseDTOs(user, userService.getUserProfilePicLocation(user),
-                userService.createFriendList(user.getSentFriends()), userService.createFriendList(user.getAddedFriends())), new LoginResponseDTO(newToken)));
+        return ResponseEntity.ok(
+                new ChangeLoginUserResponseDTO(new UserResponseDTOs(user, userService.getUserProfilePicLocation(user),
+                        userService.createFriendList(user.getSentFriends()),
+                        userService.createFriendList(user.getAddedFriends())), new LoginResponseDTO(newToken)));
     }
 
     @DeleteMapping("me")
-    public ResponseEntity<?> deleteUser(HttpServletRequest request) throws RuntimeException{
+    public ResponseEntity<?> deleteUser(HttpServletRequest request) throws RuntimeException {
         userService.deleteUser(jwtUtil.getLogin(request));
         return ResponseEntity.ok().build();
     }
@@ -108,7 +112,7 @@ public class UserController {
         }
         return ResponseEntity.ok(resource);
     }
-   
+
     @PostMapping("/sendEmail/{email}")
     public ResponseEntity<?> sendEmail(@PathVariable("email") String email) throws UserNotFoundException {
         userService.initiatePasswordReset(email);
@@ -117,22 +121,30 @@ public class UserController {
 
     @GetMapping("/reset-password")
     public ModelAndView showResetPasswordForm(
-        @RequestParam("token") String token) {
-        ModelAndView modelAndView = new ModelAndView("password");
+            @RequestParam("token") String token) {
+        ModelAndView modelAndView = new ModelAndView("Password");
         modelAndView.addObject("token", token);
         return modelAndView;
     }
-    
+
     @PostMapping("/reset-password")
     @ResponseBody
     public ModelAndView processResetPassword(
-        @RequestParam String token,
-        @RequestParam String password,
-        @RequestParam String newPasswordConfirm
-    ) throws UserNotFoundException, TokenExpiredException, TokenNotFoundException, PasswordsDontMatchException {
-        userService.resetPassword(token, password, newPasswordConfirm);
-        return new ModelAndView("done");
+            @RequestParam String token,
+            @RequestParam String password,
+            @RequestParam String newPasswordConfirm) {
+        try {
+            userService.resetPassword(token, password, newPasswordConfirm);
+            return new ModelAndView("ResetPasswordSuccess");
+        } catch (PasswordsDontMatchException e) {
+            return new ModelAndView("PasswordsDontMatch");
+        } catch (UserNotFoundException e) {
+            return new ModelAndView("UserNotFound");
+        } catch (TokenExpiredException e) {
+            return new ModelAndView("UrlExpired");
+        } catch (TokenNotFoundException e) {
+            return new ModelAndView("TokenNotFound");
+        }
     }
-    
 
 }

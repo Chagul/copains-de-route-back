@@ -160,38 +160,35 @@ public class UserService {
     }
 
     public void initiatePasswordReset(String email) {
-        User user = userRepository.findByEmail(email);
-        if (user != null) {
-            String token = UUID.randomUUID().toString();
-            UserToken userToken = new UserToken();
-            userToken.setExpiryDate(LocalDateTime.now().plusMinutes(60));
-            userToken.setToken(token);
-            userToken.setUser(email);
-            userTokenRepository.save(userToken);
 
-            String resetLink = "http://localhost:8080/users/reset-password?token=" + token;
-            sendEmail(email, resetLink);
-        }
+        String token = UUID.randomUUID().toString();
+        UserToken userToken = new UserToken();
+        userToken.setExpiryDate(LocalDateTime.now().plusMinutes(60));
+        userToken.setToken(token);
+        userToken.setUser(email);
+        userTokenRepository.save(userToken);
+
+        String resetLink = "http://localhost:8080/users/reset-password?token=" + token;
+        sendEmail(email, resetLink);
 
     }
 
-    public void resetPassword(String token, String password, String confirmPassword) throws PasswordsDontMatchException, UserNotFoundException, TokenExpiredException, TokenNotFoundException {
+    public void resetPassword(String token, String password, String confirmPassword)
+            throws PasswordsDontMatchException, UserNotFoundException, TokenExpiredException, TokenNotFoundException {
         UserToken userToken = userTokenRepository.findByToken(token);
-        if (userToken == null ) {
+        if (userToken == null) {
             throw new TokenNotFoundException();
-        } 
+        }
         if (LocalDateTime.now().isAfter(userToken.getExpiryDate())) {
             throw new TokenExpiredException();
-        }
-        else {
+        } else {
             User user = userRepository.findByEmail(userToken.getUser());
 
             if (user != null) {
                 if (password.equals(confirmPassword)) {
                     user.setPassword(passwordEncoder.encode(password));
                     userRepository.save(user);
-                } 
-                else {
+                } else {
                     throw new PasswordsDontMatchException();
                 }
             } else {
