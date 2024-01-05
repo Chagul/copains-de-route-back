@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import lombok.AllArgsConstructor;
 
@@ -114,8 +115,12 @@ public class UserController {
     }
 
     @PostMapping("/sendEmail/{email}")
-    public ResponseEntity<?> sendEmail(@PathVariable("email") String email) throws UserNotFoundException {
-        userService.initiatePasswordReset(email);
+    public ResponseEntity<?> sendEmail(HttpServletRequest request, @PathVariable("email") String email) throws UserNotFoundException { 
+        String baseUrl = ServletUriComponentsBuilder.fromRequestUri(request) 
+        .replacePath(null) 
+        .build()
+        .toUriString();
+        userService.initiatePasswordReset(email, baseUrl);
         return ResponseEntity.ok().build();
     }
 

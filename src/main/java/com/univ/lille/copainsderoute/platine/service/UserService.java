@@ -37,6 +37,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -141,17 +142,14 @@ public class UserService {
     }
 
     public void resetPassword(String email, String newPassword) throws UserNotFoundException {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
+        User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
         user.setPassword(newPassword);
         userRepository.save(user);
     }
 
     public void sendEmail(String to, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("ksrnass1208@gmail.com");
+        message.setFrom("copainsderoute@gmail.com");
         message.setTo(to);
         message.setSubject("Reset Password");
         message.setText(body);
@@ -159,7 +157,7 @@ public class UserService {
         javaMailSender.send(message);
     }
 
-    public void initiatePasswordReset(String email) {
+    public void initiatePasswordReset(String email, String baseUrl) {
 
         String token = UUID.randomUUID().toString();
         UserToken userToken = new UserToken();
@@ -168,33 +166,27 @@ public class UserService {
         userToken.setUser(email);
         userTokenRepository.save(userToken);
 
-        String resetLink = "http://localhost:8080/users/reset-password?token=" + token;
+        String resetLink = baseUrl.concat("/users/reset-password?token=").concat(token);
         sendEmail(email, resetLink);
 
     }
 
     public void resetPassword(String token, String password, String confirmPassword)
             throws PasswordsDontMatchException, UserNotFoundException, TokenExpiredException, TokenNotFoundException {
-        UserToken userToken = userTokenRepository.findByToken(token);
-        if (userToken == null) {
-            throw new TokenNotFoundException();
-        }
+        UserToken userToken = userTokenRepository.findByToken(token).orElseThrow(TokenNotFoundException::new);
+
         if (LocalDateTime.now().isAfter(userToken.getExpiryDate())) {
             throw new TokenExpiredException();
         } else {
-            User user = userRepository.findByEmail(userToken.getUser());
-
-            if (user != null) {
+            User user = userRepository.findByEmail(userToken.getUser()).orElseThrow(UserNotFoundException::new);
+          
                 if (password.equals(confirmPassword)) {
                     user.setPassword(passwordEncoder.encode(password));
                     userRepository.save(user);
                 } else {
                     throw new PasswordsDontMatchException();
                 }
-            } else {
-                throw new UserNotFoundException();
-            }
+            } 
         }
     }
 
-}
