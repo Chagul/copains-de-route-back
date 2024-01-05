@@ -6,7 +6,10 @@ import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.ChangeLoginUserRes
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.LoginResponseDTO;
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.UserResponseDTOs;
 import com.univ.lille.copainsderoute.platine.entity.User;
+import com.univ.lille.copainsderoute.platine.exceptions.PasswordsDontMatchException;
 import com.univ.lille.copainsderoute.platine.exceptions.ProfilePicNotFoundException;
+import com.univ.lille.copainsderoute.platine.exceptions.TokenExpiredException;
+import com.univ.lille.copainsderoute.platine.exceptions.TokenNotFoundException;
 import com.univ.lille.copainsderoute.platine.exceptions.UserNotFoundException;
 import com.univ.lille.copainsderoute.platine.exceptions.UserWithNoProfilePicException;
 import com.univ.lille.copainsderoute.platine.exceptions.ZeroUserFoundException;
@@ -14,22 +17,20 @@ import com.univ.lille.copainsderoute.platine.service.UserService;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.websocket.server.PathParam;
-import org.apache.coyote.Response;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import lombok.AllArgsConstructor;
 
@@ -107,4 +108,31 @@ public class UserController {
         }
         return ResponseEntity.ok(resource);
     }
+   
+    @PostMapping("/sendEmail/{email}")
+    public ResponseEntity<?> sendEmail(@PathVariable("email") String email) throws UserNotFoundException {
+        userService.initiatePasswordReset(email);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/reset-password")
+    public ModelAndView showResetPasswordForm(
+        @RequestParam("token") String token) {
+        ModelAndView modelAndView = new ModelAndView("password");
+        modelAndView.addObject("token", token);
+        return modelAndView;
+    }
+    
+    @PostMapping("/reset-password")
+    @ResponseBody
+    public ModelAndView processResetPassword(
+        @RequestParam String token,
+        @RequestParam String password,
+        @RequestParam String newPasswordConfirm
+    ) throws UserNotFoundException, TokenExpiredException, TokenNotFoundException, PasswordsDontMatchException {
+        userService.resetPassword(token, password, newPasswordConfirm);
+        return new ModelAndView("done");
+    }
+    
+
 }

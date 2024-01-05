@@ -65,6 +65,8 @@ public class User {
         user.setEmail(userRequestDTO.getEmail());
         return user;
     }
+
+   // public String token;
 }
 
 
