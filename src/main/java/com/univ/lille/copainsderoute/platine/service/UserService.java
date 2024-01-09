@@ -1,6 +1,7 @@
 package com.univ.lille.copainsderoute.platine.service;
 
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.FriendsRequestResponseDTO;
+import com.univ.lille.copainsderoute.platine.entity.Event;
 import com.univ.lille.copainsderoute.platine.entity.Friends;
 import com.univ.lille.copainsderoute.platine.exceptions.PasswordsDontMatchException;
 import com.univ.lille.copainsderoute.platine.exceptions.ProfilePicNotFoundException;
@@ -30,6 +31,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -53,6 +56,8 @@ public class UserService {
 
     private static final String USER_PATH = "/users/";
     private static final String PROFILE_PIC_PATH = "/profilePic";
+
+    private static final double CO2_EMISSION_OF_CAR_PER_KILOMETER = 97d;
 
     public List<UserResponseDTOs> getUsers() throws ZeroUserFoundException {
         List<User> users = userRepository.findAll();
@@ -84,8 +89,27 @@ public class UserService {
 
     public UserResponseDTOs getUserByLogin(String login) throws UserNotFoundException {
         User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
+
+        updateDistanceTravelledAndCo2NotEmitted(user);
         return new UserResponseDTOs(user, getUserProfilePicLocation(user),
                 createFriendList(user.getSentFriends()), createFriendList(user.getAddedFriends()));
+    }
+
+    private void updateDistanceTravelledAndCo2NotEmitted(User user) {
+        long userDistanceTravelled = user.getParticipatedEvent().stream().filter(Event::hasPassed).map(Event::getDistance).reduce(0, Integer::sum);
+        BigDecimal co2EmittedByCar = BigDecimal.valueOf(userDistanceTravelled)
+                .multiply(BigDecimal.valueOf(CO2_EMISSION_OF_CAR_PER_KILOMETER))
+                .setScale(0, RoundingMode.HALF_UP);
+        // we consider that the emissions of a bike is only 10% of what a car emits per kilometer
+        int co2NotEmittedWithBike = co2EmittedByCar.subtract(co2EmittedByCar.divide(BigDecimal.TEN, RoundingMode.HALF_UP)).intValue();
+
+        if(user.getDistanceTraveled() != Math.toIntExact(userDistanceTravelled)) {
+            user.setDistanceTraveled(Math.toIntExact(userDistanceTravelled));
+        }
+        if(user.getCo2_not_emitted() != co2NotEmittedWithBike) {
+            user.setCo2_not_emitted(co2NotEmittedWithBike);
+        }
+        userRepository.save(user);
     }
 
     public User updateUser(String loginChange, String userLogin) throws UserNotFoundException {
