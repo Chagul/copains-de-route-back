@@ -94,8 +94,6 @@ public class UserService {
         User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
 
         updateDistanceTravelledAndCo2NotEmitted(user);
-
-        updateDistanceTravelledAndCo2NotEmitted(user);
         return new UserResponseDTOs(user, getUserProfilePicLocation(user),
                 createFriendList(user.getSentFriends()), createFriendList(user.getAddedFriends()));
     }
