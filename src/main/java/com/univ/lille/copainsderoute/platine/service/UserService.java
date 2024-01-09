@@ -177,11 +177,11 @@ public class UserService {
         return friends.stream().map(f -> new FriendsRequestResponseDTO(f, getUserProfilePicLocation(f.getSender()),
                 getUserProfilePicLocation(f.getAdded()))).toList();
     }
-    public void sendEmail(String to, String body) {
+    public void sendEmail(String to, String object, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("copainsderoute@gmail.com");
         message.setTo(to);
-        message.setSubject("Reset Password");
+        message.setSubject(object);
         message.setText(body);
 
         javaMailSender.send(message);
@@ -197,7 +197,7 @@ public class UserService {
         userTokenRepository.save(userToken);
 
         String resetLink = baseUrl.concat("/users/reset-password?token=").concat(token);
-        sendEmail(email, resetLink);
+        sendEmail(email, "Reset your password",resetLink);
 
     }
 
