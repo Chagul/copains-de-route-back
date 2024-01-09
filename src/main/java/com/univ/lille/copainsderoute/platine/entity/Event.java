@@ -24,6 +24,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -158,6 +159,10 @@ public class Event {
 
     public boolean isUserInParticipants(User u) {
         return this.getParticipants().contains(u);
+    }
+
+    public boolean hasPassed() {
+        return LocalDateTime.of(this.startDate, this.startTime).isBefore(LocalDateTime.now());
     }
 }
 
