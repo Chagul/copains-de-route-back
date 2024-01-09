@@ -2,6 +2,7 @@ package com.univ.lille.copainsderoute.platine.service;
 
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.FriendsRequestResponseDTO;
 import com.univ.lille.copainsderoute.platine.entity.Event;
+import com.univ.lille.copainsderoute.platine.entity.Event;
 import com.univ.lille.copainsderoute.platine.entity.Friends;
 import com.univ.lille.copainsderoute.platine.exceptions.PasswordsDontMatchException;
 import com.univ.lille.copainsderoute.platine.exceptions.ProfilePicNotFoundException;
@@ -31,6 +32,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.file.Files;
@@ -89,6 +92,8 @@ public class UserService {
 
     public UserResponseDTOs getUserByLogin(String login) throws UserNotFoundException {
         User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
+
+        updateDistanceTravelledAndCo2NotEmitted(user);
 
         updateDistanceTravelledAndCo2NotEmitted(user);
         return new UserResponseDTOs(user, getUserProfilePicLocation(user),
