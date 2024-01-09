@@ -1,6 +1,7 @@
 package com.univ.lille.copainsderoute.platine.controller;
 
 import com.univ.lille.copainsderoute.platine.authent.JwtUtil;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.PasswordUpdateRequestDTOs;
 import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.UserRegisterRequestDTOs;
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.ChangeLoginUserResponseDTO;
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.LoginResponseDTO;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -97,6 +99,17 @@ public class UserController {
                         userService.createFriendList(user.getAddedFriends())), new LoginResponseDTO(newToken)));
     }
 
+    @PatchMapping("me/password")
+public ResponseEntity<ChangeLoginUserResponseDTO> updatePassword(HttpServletRequest request,
+        @RequestBody PasswordUpdateRequestDTOs passwordUpdateRequest) throws RuntimeException {
+    try {
+        userService.resetPassword(passwordUpdateRequest.getOldPassword(), passwordUpdateRequest.getNewPassword(), jwtUtil.getLogin(request));
+    } catch (UserNotFoundException e) {
+        return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.ok().build();
+}
+
     @DeleteMapping("me")
     public ResponseEntity<?> deleteUser(HttpServletRequest request) throws RuntimeException {
         userService.deleteUser(jwtUtil.getLogin(request));
@@ -125,7 +138,7 @@ public class UserController {
     }
 
     @GetMapping("/reset-password")
-    public ModelAndView showResetPasswordForm(
+    public ModelAndView showresetPasswordByEmailForm(
             @RequestParam("token") String token) {
         ModelAndView modelAndView = new ModelAndView("Password");
         modelAndView.addObject("token", token);
@@ -134,13 +147,13 @@ public class UserController {
 
     @PostMapping("/reset-password")
     @ResponseBody
-    public ModelAndView processResetPassword(
+    public ModelAndView processresetPasswordByEmail(
             @RequestParam String token,
             @RequestParam String password,
             @RequestParam String newPasswordConfirm) {
         try {
-            userService.resetPassword(token, password, newPasswordConfirm);
-            return new ModelAndView("ResetPasswordSuccess");
+            userService.resetPasswordByEmail(token, password, newPasswordConfirm);
+            return new ModelAndView("resetPasswordByEmailSuccess");
         } catch (PasswordsDontMatchException e) {
             return new ModelAndView("PasswordsDontMatch");
         } catch (UserNotFoundException e) {

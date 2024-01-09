@@ -141,9 +141,13 @@ public class UserService {
                 getUserProfilePicLocation(f.getAdded()))).toList();
     }
 
-    public void resetPassword(String email, String newPassword) throws UserNotFoundException {
-        User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
-        user.setPassword(newPassword);
+    public void resetPassword(String oldPassword, String newPassword, String login) throws UserNotFoundException {
+        User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new UserNotFoundException();
+        }
+        String userNewPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(userNewPassword);
         userRepository.save(user);
     }
 
@@ -171,7 +175,7 @@ public class UserService {
 
     }
 
-    public void resetPassword(String token, String password, String confirmPassword)
+    public void resetPasswordByEmail(String token, String password, String confirmPassword)
             throws PasswordsDontMatchException, UserNotFoundException, TokenExpiredException, TokenNotFoundException {
         UserToken userToken = userTokenRepository.findByToken(token).orElseThrow(TokenNotFoundException::new);
 
