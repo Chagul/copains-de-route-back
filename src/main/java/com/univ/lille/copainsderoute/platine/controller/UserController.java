@@ -89,6 +89,8 @@ public class UserController {
             user = userService.updateUser(userUpdateRequestDTOs, jwtUtil.getLogin(request));
         } catch (UserNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (PasswordsDontMatchException e) {
+            return ResponseEntity.badRequest().build();
         }
         String newToken = jwtUtil.createToken(user);
         return ResponseEntity.ok(
