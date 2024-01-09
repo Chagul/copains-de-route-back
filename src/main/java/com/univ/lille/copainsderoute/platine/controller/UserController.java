@@ -1,8 +1,7 @@
 package com.univ.lille.copainsderoute.platine.controller;
 
 import com.univ.lille.copainsderoute.platine.authent.JwtUtil;
-import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.PasswordUpdateRequestDTOs;
-import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.UserRegisterRequestDTOs;
+import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.UserUpdateRequestDTOs;
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.ChangeLoginUserResponseDTO;
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.LoginResponseDTO;
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.UserResponseDTOs;
@@ -16,7 +15,6 @@ import com.univ.lille.copainsderoute.platine.exceptions.UserWithNoProfilePicExce
 import com.univ.lille.copainsderoute.platine.exceptions.ZeroUserFoundException;
 import com.univ.lille.copainsderoute.platine.service.UserService;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -85,10 +83,10 @@ public class UserController {
 
     @PatchMapping("me")
     public ResponseEntity<ChangeLoginUserResponseDTO> updateUser(HttpServletRequest request,
-            @RequestParam(value = "login", required = true) String newLogin) throws RuntimeException {
+            @RequestBody UserUpdateRequestDTOs userUpdateRequestDTOs) throws UserNotFoundException, PasswordsDontMatchException {
         User user = null;
         try {
-            user = userService.updateUser(newLogin, jwtUtil.getLogin(request));
+            user = userService.updateUser(userUpdateRequestDTOs, jwtUtil.getLogin(request));
         } catch (UserNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
@@ -98,17 +96,6 @@ public class UserController {
                         userService.createFriendList(user.getSentFriends()),
                         userService.createFriendList(user.getAddedFriends())), new LoginResponseDTO(newToken)));
     }
-
-    @PatchMapping("me/password")
-public ResponseEntity<ChangeLoginUserResponseDTO> updatePassword(HttpServletRequest request,
-        @RequestBody PasswordUpdateRequestDTOs passwordUpdateRequest) throws RuntimeException {
-    try {
-        userService.resetPassword(passwordUpdateRequest.getOldPassword(), passwordUpdateRequest.getNewPassword(), jwtUtil.getLogin(request));
-    } catch (UserNotFoundException e) {
-        return ResponseEntity.notFound().build();
-    }
-    return ResponseEntity.ok().build();
-}
 
     @DeleteMapping("me")
     public ResponseEntity<?> deleteUser(HttpServletRequest request) throws RuntimeException {

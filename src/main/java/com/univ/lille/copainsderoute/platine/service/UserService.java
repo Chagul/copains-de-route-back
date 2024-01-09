@@ -88,11 +88,21 @@ public class UserService {
                 createFriendList(user.getSentFriends()), createFriendList(user.getAddedFriends()));
     }
 
-    public User updateUser(String loginChange, String userLogin) throws UserNotFoundException {
+    public User updateUser(UserUpdateRequestDTOs updateRequestDTOs, String userLogin) throws UserNotFoundException, PasswordsDontMatchException {
         User user = userRepository.findByLogin(userLogin).orElseThrow(UserNotFoundException::new);
-        if (StringUtils.hasText(loginChange)) {
-            user.setLogin(loginChange);
+        if (StringUtils.hasText(updateRequestDTOs.getLogin())) {
+            user.setLogin(updateRequestDTOs.getLogin());
         }
+        if (StringUtils.hasText(updateRequestDTOs.getNewPassword()) && StringUtils.hasText(updateRequestDTOs.getOldPassword())){
+
+            if (!passwordEncoder.matches(updateRequestDTOs.getOldPassword(), user.getPassword())) {
+                throw new PasswordsDontMatchException();
+        }
+            else {
+                String userNewPassword = passwordEncoder.encode(updateRequestDTOs.getNewPassword());
+                user.setPassword(userNewPassword);
+        } 
+    }
         user = userRepository.save(user);
         return user;
     }
@@ -140,17 +150,6 @@ public class UserService {
         return friends.stream().map(f -> new FriendsRequestResponseDTO(f, getUserProfilePicLocation(f.getSender()),
                 getUserProfilePicLocation(f.getAdded()))).toList();
     }
-
-    public void resetPassword(String oldPassword, String newPassword, String login) throws UserNotFoundException {
-        User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
-        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            throw new UserNotFoundException();
-        }
-        String userNewPassword = passwordEncoder.encode(newPassword);
-        user.setPassword(userNewPassword);
-        userRepository.save(user);
-    }
-
     public void sendEmail(String to, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("copainsderoute@gmail.com");
