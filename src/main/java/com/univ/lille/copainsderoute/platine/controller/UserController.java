@@ -140,7 +140,7 @@ public class UserController {
             @RequestParam String newPasswordConfirm) {
         try {
             userService.resetPasswordByEmail(token, password, newPasswordConfirm);
-            return new ModelAndView("resetPasswordByEmailSuccess");
+            return new ModelAndView("ResetPasswordSuccess");
         } catch (PasswordsDontMatchException e) {
             return new ModelAndView("PasswordsDontMatch");
         } catch (UserNotFoundException e) {
