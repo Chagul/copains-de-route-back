@@ -2,6 +2,7 @@ package com.univ.lille.copainsderoute.platine.service;
 
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.FriendsRequestResponseDTO;
 import com.univ.lille.copainsderoute.platine.entity.Event;
+import com.univ.lille.copainsderoute.platine.entity.Event;
 import com.univ.lille.copainsderoute.platine.entity.Friends;
 import com.univ.lille.copainsderoute.platine.exceptions.PasswordsDontMatchException;
 import com.univ.lille.copainsderoute.platine.exceptions.ProfilePicNotFoundException;
@@ -31,6 +32,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.file.Files;
@@ -112,11 +115,21 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public User updateUser(String loginChange, String userLogin) throws UserNotFoundException {
+    public User updateUser(UserUpdateRequestDTOs updateRequestDTOs, String userLogin) throws UserNotFoundException, PasswordsDontMatchException {
         User user = userRepository.findByLogin(userLogin).orElseThrow(UserNotFoundException::new);
-        if (StringUtils.hasText(loginChange)) {
-            user.setLogin(loginChange);
+        if (StringUtils.hasText(updateRequestDTOs.getLogin())) {
+            user.setLogin(updateRequestDTOs.getLogin());
         }
+        if (StringUtils.hasText(updateRequestDTOs.getNewPassword()) && StringUtils.hasText(updateRequestDTOs.getOldPassword())){
+
+            if (!passwordEncoder.matches(updateRequestDTOs.getOldPassword(), user.getPassword())) {
+                throw new PasswordsDontMatchException();
+        }
+            else {
+                String userNewPassword = passwordEncoder.encode(updateRequestDTOs.getNewPassword());
+                user.setPassword(userNewPassword);
+        } 
+    }
         user = userRepository.save(user);
         return user;
     }
@@ -164,22 +177,11 @@ public class UserService {
         return friends.stream().map(f -> new FriendsRequestResponseDTO(f, getUserProfilePicLocation(f.getSender()),
                 getUserProfilePicLocation(f.getAdded()))).toList();
     }
-
-    public void resetPassword(String oldPassword, String newPassword, String login) throws UserNotFoundException {
-        User user = userRepository.findByLogin(login).orElseThrow(UserNotFoundException::new);
-        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            throw new UserNotFoundException();
-        }
-        String userNewPassword = passwordEncoder.encode(newPassword);
-        user.setPassword(userNewPassword);
-        userRepository.save(user);
-    }
-
-    public void sendEmail(String to, String body) {
+    public void sendEmail(String to, String object, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("copainsderoute@gmail.com");
         message.setTo(to);
-        message.setSubject("Reset Password");
+        message.setSubject(object);
         message.setText(body);
 
         javaMailSender.send(message);
@@ -195,7 +197,7 @@ public class UserService {
         userTokenRepository.save(userToken);
 
         String resetLink = baseUrl.concat("/users/reset-password?token=").concat(token);
-        sendEmail(email, resetLink);
+        sendEmail(email, "Reset your password",resetLink);
 
     }
 
