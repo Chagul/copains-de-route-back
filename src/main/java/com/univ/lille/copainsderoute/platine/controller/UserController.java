@@ -6,18 +6,13 @@ import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.ChangeLoginUserRes
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.LoginResponseDTO;
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.UserResponseDTOs;
 import com.univ.lille.copainsderoute.platine.entity.User;
-import com.univ.lille.copainsderoute.platine.exceptions.PasswordsDontMatchException;
-import com.univ.lille.copainsderoute.platine.exceptions.ProfilePicNotFoundException;
-import com.univ.lille.copainsderoute.platine.exceptions.TokenExpiredException;
-import com.univ.lille.copainsderoute.platine.exceptions.TokenNotFoundException;
-import com.univ.lille.copainsderoute.platine.exceptions.UserNotFoundException;
-import com.univ.lille.copainsderoute.platine.exceptions.UserWithNoProfilePicException;
-import com.univ.lille.copainsderoute.platine.exceptions.ZeroUserFoundException;
+import com.univ.lille.copainsderoute.platine.exceptions.*;
 import com.univ.lille.copainsderoute.platine.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -83,7 +78,7 @@ public class UserController {
 
     @PatchMapping("me")
     public ResponseEntity<ChangeLoginUserResponseDTO> updateUser(HttpServletRequest request,
-            @RequestBody UserUpdateRequestDTOs userUpdateRequestDTOs) throws UserNotFoundException, PasswordsDontMatchException {
+            @RequestBody UserUpdateRequestDTOs userUpdateRequestDTOs) {
         User user = null;
         try {
             user = userService.updateUser(userUpdateRequestDTOs, jwtUtil.getLogin(request));
@@ -91,6 +86,8 @@ public class UserController {
             return ResponseEntity.notFound().build();
         } catch (PasswordsDontMatchException e) {
             return ResponseEntity.badRequest().build();
+        } catch (LoginAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         String newToken = jwtUtil.createToken(user);
         return ResponseEntity.ok(
@@ -100,7 +97,7 @@ public class UserController {
     }
 
     @DeleteMapping("me")
-    public ResponseEntity<?> deleteUser(HttpServletRequest request) throws RuntimeException {
+    public ResponseEntity<?> deleteUser(HttpServletRequest request) {
         userService.deleteUser(jwtUtil.getLogin(request));
         return ResponseEntity.ok().build();
     }
@@ -117,7 +114,7 @@ public class UserController {
     }
 
     @PostMapping("/sendEmail/{email}")
-    public ResponseEntity<?> sendEmail(HttpServletRequest request, @PathVariable("email") String email) throws UserNotFoundException { 
+    public ResponseEntity<?> sendEmail(HttpServletRequest request, @PathVariable("email") String email) {
         String baseUrl = ServletUriComponentsBuilder.fromRequestUri(request) 
         .replacePath(null) 
         .build()
@@ -127,7 +124,7 @@ public class UserController {
     }
 
     @GetMapping("/reset-password")
-    public ModelAndView showresetPasswordByEmailForm(
+    public ModelAndView showResetPasswordByEmailForm(
             @RequestParam("token") String token) {
         ModelAndView modelAndView = new ModelAndView("Password");
         modelAndView.addObject("token", token);
@@ -136,7 +133,7 @@ public class UserController {
 
     @PostMapping("/reset-password")
     @ResponseBody
-    public ModelAndView processresetPasswordByEmail(
+    public ModelAndView processResetPasswordByEmail(
             @RequestParam String token,
             @RequestParam String password,
             @RequestParam String newPasswordConfirm) {
