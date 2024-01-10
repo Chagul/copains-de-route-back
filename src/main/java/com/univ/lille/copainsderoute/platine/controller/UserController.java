@@ -31,6 +31,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import lombok.AllArgsConstructor;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -88,6 +89,8 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         } catch (LoginAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
         }
         String newToken = jwtUtil.createToken(user);
         return ResponseEntity.ok(
