@@ -12,4 +12,6 @@ public class UserUpdateRequestDTOs {
     private String login;
     private String oldPassword;
     private String newPassword;
+    private String base64ProfilePic;
+    private String profilePicFormat;
 }

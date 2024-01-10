@@ -26,14 +26,10 @@ import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.ModelAndView;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.file.Files;
@@ -45,7 +41,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -80,7 +75,7 @@ public class UserService {
         User user = User.getUserFromDTO(userRequestDTO);
         user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
         user = userRepository.save(user);
-        if (StringUtils.hasText(userRequestDTO.getBase64ProfilePic())) {
+        if (StringUtils.hasText(userRequestDTO.getBase64ProfilePic()) && StringUtils.hasText(userRequestDTO.getProfilePicFormat())) {
             byte[] profilePicBytes = Base64.getDecoder().decode(userRequestDTO.getBase64ProfilePic());
             Files.createDirectories(Paths.get(getProfilePicPath(user.getId())));
             Path destinationFile = Paths.get(getProfilePicPath(user.getId()),
@@ -115,7 +110,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public User updateUser(UserUpdateRequestDTOs updateRequestDTOs, String userLogin) throws UserNotFoundException, PasswordsDontMatchException, LoginAlreadyExistsException {
+    public User updateUser(UserUpdateRequestDTOs updateRequestDTOs, String userLogin) throws UserNotFoundException, PasswordsDontMatchException, LoginAlreadyExistsException, IOException {
         User user = userRepository.findByLogin(userLogin).orElseThrow(UserNotFoundException::new);
         if (StringUtils.hasText(updateRequestDTOs.getLogin())) {
             Optional<User> existing = userRepository.findByLogin(updateRequestDTOs.getLogin());
@@ -125,15 +120,26 @@ public class UserService {
             user.setLogin(updateRequestDTOs.getLogin());
         }
         if (StringUtils.hasText(updateRequestDTOs.getNewPassword()) && StringUtils.hasText(updateRequestDTOs.getOldPassword())){
-
             if (!passwordEncoder.matches(updateRequestDTOs.getOldPassword(), user.getPassword())) {
                 throw new PasswordsDontMatchException();
-        }
-            else {
+            } else {
                 String userNewPassword = passwordEncoder.encode(updateRequestDTOs.getNewPassword());
                 user.setPassword(userNewPassword);
-        } 
-    }
+            }
+        }
+        if (StringUtils.hasText(updateRequestDTOs.getBase64ProfilePic()) && StringUtils.hasText(updateRequestDTOs.getProfilePicFormat())) {
+            byte[] profilePicBytes = Base64.getDecoder().decode(updateRequestDTOs.getBase64ProfilePic());
+            if(Files.exists(Paths.get(getProfilePicPath(user.getId())))) {
+                try(Stream<Path> files = Files.list(Paths.get(getProfilePicPath(user.getId())))) {
+                    String fileName = files.map(p -> p.toFile().getName()).findFirst().get();
+                    Files.deleteIfExists(Paths.get(getProfilePicPath(user.getId()), fileName));
+                }
+            }
+            Files.createDirectories(Paths.get(getProfilePicPath(user.getId())));
+            Path destinationFile = Paths.get(getProfilePicPath(user.getId()),
+                    "profilePic" + updateRequestDTOs.getProfilePicFormat());
+            Files.write(destinationFile, profilePicBytes);
+        }
         user = userRepository.save(user);
         return user;
     }
