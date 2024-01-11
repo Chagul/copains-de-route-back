@@ -70,7 +70,7 @@ public class UserService {
         if(existingUser.isPresent()) {
             throw new LoginAlreadyExistsException();
         }
-        Optional<User> existingMail = userRepository.findByEmail(user.getLogin());
+        Optional<User> existingMail = userRepository.findByEmail(user.getEmail());
         if(existingMail.isPresent()) {
             throw new MailAlreadyExistsException();
         }
