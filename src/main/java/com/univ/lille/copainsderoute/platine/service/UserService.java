@@ -3,14 +3,7 @@ package com.univ.lille.copainsderoute.platine.service;
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.FriendsRequestResponseDTO;
 import com.univ.lille.copainsderoute.platine.entity.Event;
 import com.univ.lille.copainsderoute.platine.entity.Friends;
-import com.univ.lille.copainsderoute.platine.exceptions.PasswordsDontMatchException;
-import com.univ.lille.copainsderoute.platine.exceptions.ProfilePicNotFoundException;
-import com.univ.lille.copainsderoute.platine.exceptions.TokenExpiredException;
-import com.univ.lille.copainsderoute.platine.exceptions.TokenNotFoundException;
-import com.univ.lille.copainsderoute.platine.exceptions.UserNotFoundException;
-import com.univ.lille.copainsderoute.platine.exceptions.UserWithNoProfilePicException;
-import com.univ.lille.copainsderoute.platine.exceptions.ZeroUserFoundException;
-import com.univ.lille.copainsderoute.platine.exceptions.LoginAlreadyExistsException;
+import com.univ.lille.copainsderoute.platine.exceptions.*;
 import com.univ.lille.copainsderoute.platine.repository.UserRepository;
 import com.univ.lille.copainsderoute.platine.repository.UserTokenRepository;
 import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.*;
@@ -71,8 +64,16 @@ public class UserService {
         return userResponseDTOs;
     }
 
-    public User createUser(UserRegisterRequestDTOs userRequestDTO) throws IOException {
+    public User createUser(UserRegisterRequestDTOs userRequestDTO) throws IOException, LoginAlreadyExistsException, MailAlreadyExistsException {
         User user = User.getUserFromDTO(userRequestDTO);
+        Optional<User> existingUser = userRepository.findByLogin(user.getLogin());
+        if(existingUser.isPresent()) {
+            throw new LoginAlreadyExistsException();
+        }
+        Optional<User> existingMail = userRepository.findByEmail(user.getLogin());
+        if(existingMail.isPresent()) {
+            throw new MailAlreadyExistsException();
+        }
         user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
         user = userRepository.save(user);
         if (StringUtils.hasText(userRequestDTO.getBase64ProfilePic()) && StringUtils.hasText(userRequestDTO.getProfilePicFormat())) {

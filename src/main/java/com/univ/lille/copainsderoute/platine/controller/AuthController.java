@@ -5,6 +5,8 @@ import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.LoginRequestDTO;
 import com.univ.lille.copainsderoute.platine.dtos.dtoRequest.UserRegisterRequestDTOs;
 import com.univ.lille.copainsderoute.platine.dtos.dtoResponse.LoginResponseDTO;
 import com.univ.lille.copainsderoute.platine.entity.User;
+import com.univ.lille.copainsderoute.platine.exceptions.LoginAlreadyExistsException;
+import com.univ.lille.copainsderoute.platine.exceptions.MailAlreadyExistsException;
 import com.univ.lille.copainsderoute.platine.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -58,10 +60,14 @@ public class AuthController {
             createdUser = userService.createUser(userRegisterRequestDTOs);
         } catch (IOException e) {
             return ResponseEntity.internalServerError().build();
+        } catch (MailAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (LoginAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         if(createdUser != null)
             return ResponseEntity.created(URI.create("/users/me")).build();
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @PostMapping("verifyToken")
